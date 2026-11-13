@@ -1,0 +1,191 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/*
+ * Sufra design tokens.
+ * Palette: cool sage paper + forest-black ink, with tomato as the single accent.
+ * Status colours are semantic and appear only where they describe an order's state.
+ * Shape rule: interactive controls are pills, form fields use --radius-field,
+ * panels and photos use --radius-panel, small thumbnails use --radius-thumb.
+ */
+@theme {
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-paper: #f1f2ec;
+  --color-paper-deep: #e5e8de;
+  --color-surface: #fbfbf8;
+  --color-ink: #14211b;
+  --color-ink-soft: #33413a;
+  --color-muted: #5b6862;
+  --color-line: #d8dcd2;
+  --color-line-strong: #bcc4b8;
+
+  --color-tomato: #d13e23;
+  --color-tomato-deep: #a93019;
+  --color-tomato-wash: #f9e2db;
+
+  --color-forest: #1d3428;
+  --color-forest-soft: #2b4637;
+
+  --color-status-new: #d9a400;
+  --color-status-new-wash: #fbefc4;
+  --color-status-new-ink: #6b4f00;
+  --color-status-review: #4f73a8;
+  --color-status-review-wash: #e2e9f3;
+  --color-status-review-ink: #2c4a75;
+  --color-status-confirmed: #2a8a80;
+  --color-status-confirmed-wash: #d9eeeb;
+  --color-status-confirmed-ink: #1b5c55;
+  --color-status-preparing: #d13e23;
+  --color-status-preparing-wash: #f9e2db;
+  --color-status-preparing-ink: #962a16;
+  --color-status-ready: #3c8a59;
+  --color-status-ready-wash: #dcecdf;
+  --color-status-ready-ink: #245a39;
+  --color-status-done: #7d8a83;
+  --color-status-done-wash: #e6e9e3;
+  --color-status-done-ink: #45524b;
+  --color-status-cancelled: #9a5a50;
+  --color-status-cancelled-wash: #f0e5e2;
+  --color-status-cancelled-ink: #7a3f36;
+
+  --color-danger: #b42318;
+  --color-danger-wash: #fbe4e1;
+
+  --radius-field: 14px;
+  --radius-thumb: 14px;
+  --radius-panel: 22px;
+
+  --shadow-lift: 0 1px 2px rgb(20 33 27 / 0.06), 0 14px 34px -14px rgb(20 33 27 / 0.22);
+  --shadow-float: 0 2px 6px rgb(20 33 27 / 0.08), 0 30px 60px -20px rgb(20 33 27 / 0.38);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-pop: pop 360ms var(--ease-out-expo);
+
+  @keyframes shimmer {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.22);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 9rem;
+  }
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+  }
+  ::selection {
+    background: var(--color-tomato);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-tomato);
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+/* Condensed display cut of Bricolage: the menu-board voice of the brand. */
+@utility display {
+  font-family: var(--font-display);
+  font-stretch: 78%;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kitchen-ticket edge: scalloped perforations along the top and bottom. */
+@utility ticket {
+  --notch: 5px;
+  --gap: 16px;
+  mask:
+    radial-gradient(circle var(--notch) at 50% 0, #0000 97%, #000) top / var(--gap) 51% repeat-x,
+    radial-gradient(circle var(--notch) at 50% 100%, #0000 97%, #000) bottom / var(--gap) 51% repeat-x;
+}
+
+@utility ticket-top {
+  --notch: 5px;
+  --gap: 16px;
+  mask:
+    radial-gradient(circle var(--notch) at 50% 0, #0000 97%, #000) top / var(--gap) 51% repeat-x,
+    linear-gradient(#000, #000) bottom / 100% 50% no-repeat;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.55) 50%,
+      transparent 70%
+    )
+    var(--color-paper-deep);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
