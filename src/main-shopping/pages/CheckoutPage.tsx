@@ -9,6 +9,7 @@ import { EmptyState } from '@/shared/ui/EmptyState';
 import { Checkbox, Field, Input, Select, Textarea } from '@/shared/ui/form';
 import { InlineNotice } from '@/shared/ui/states';
 import { FulfillmentPicker } from '../components/checkout/FulfillmentPicker';
+import { MobileCheckoutBar } from '../components/checkout/MobileCheckoutBar';
 import { OrderSummary } from '../components/checkout/OrderSummary';
 import { useCheckout } from '../hooks/useCheckout';
 import { NOTES_LIMIT } from '../lib/checkout';
@@ -59,15 +60,20 @@ export function CheckoutPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
-      <Link to="/menu" className="inline-flex items-center gap-2 text-[15px] font-semibold text-ink-soft hover:text-ink">
+    <div className="mx-auto max-w-7xl px-4 pt-4 pb-24 sm:px-6 sm:pt-8 lg:px-8 lg:pt-12 lg:pb-0">
+      <Link to="/menu" className="inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-ink-soft hover:text-ink">
         <ArrowLeft size={16} weight="bold" aria-hidden />
         Keep browsing
       </Link>
-      <h1 className="display mt-4 text-[clamp(3.5rem,9vw,6.5rem)] leading-[0.88]">Checkout</h1>
+      <h1 className="display mt-2 text-[clamp(3.25rem,9vw,6.5rem)] leading-[0.88] sm:mt-4">Checkout</h1>
 
-      <form onSubmit={submit} noValidate className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16">
-        <div className="flex flex-col gap-12">
+      <form onSubmit={submit} noValidate className="mt-8 grid grid-cols-1 gap-10 sm:mt-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16">
+        <MobileCheckoutBar
+          total={totals.total}
+          feePending={fulfillment === 'delivery' && !zone}
+          submitting={isSubmitting}
+        />
+        <div className="flex flex-col gap-10 sm:gap-12">
           {unavailable.length > 0 && (
             <InlineNotice
               tone="warning"
@@ -87,7 +93,7 @@ export function CheckoutPage() {
           </FormSection>
 
           <FormSection title="Your details">
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Field label="Full name" error={errors.name?.message}>
                 {({ id, describedBy, invalid }) => (
                   <Input id={id} autoComplete="name" aria-describedby={describedBy} aria-invalid={invalid} {...register('name')} />
@@ -112,7 +118,7 @@ export function CheckoutPage() {
 
           {fulfillment === 'delivery' ? (
             <FormSection title="Where to?">
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field label="Area" error={errors.zoneId?.message} hint={zone ? `Usually arrives in about ${zone.etaMinutes} minutes.` : undefined}>
                   {({ id, describedBy, invalid }) => (
                     <Select

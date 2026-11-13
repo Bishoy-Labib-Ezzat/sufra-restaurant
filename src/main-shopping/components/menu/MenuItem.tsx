@@ -41,7 +41,7 @@ export function MenuItem({ product, onOpen, className }: MenuItemProps) {
         </div>
       </div>
 
-      <div className="relative w-28 sm:w-32">
+      <div className="relative w-24 min-[380px]:w-28 sm:w-32">
         <div className="aspect-square overflow-hidden rounded-thumb bg-paper-deep">
           <img
             src={photo(product.imageUrl, 320, 320)}

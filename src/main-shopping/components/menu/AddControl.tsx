@@ -33,7 +33,7 @@ export function AddControl({ product, className }: { product: Product; className
             transition={{ type: 'spring', stiffness: 500, damping: 32 }}
             onClick={() => addToCart(product)}
             aria-label={`Add ${product.name} to your order`}
-            className="inline-flex h-9 items-center gap-1 rounded-full bg-ink pr-4 pl-3 text-sm font-semibold text-paper shadow-lift transition-colors hover:bg-tomato active:scale-95"
+            className="inline-flex h-9 items-center gap-1 rounded-full bg-ink pr-4 pl-3 text-sm font-semibold text-paper shadow-lift pointer-coarse:h-11 transition-colors hover:bg-tomato active:scale-95"
           >
             <Plus size={16} weight="bold" aria-hidden />
             Add

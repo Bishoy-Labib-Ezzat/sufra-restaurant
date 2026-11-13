@@ -30,7 +30,7 @@ function BoardView() {
 
   if (isPending) {
     return (
-      <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5" role="status" aria-label="Loading orders">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-5" role="status" aria-label="Loading orders">
         {OPEN_STATUSES.map((status) => (
           <Skeleton key={status} className="h-96 rounded-panel" />
         ))}

@@ -4,25 +4,25 @@ import { hoursLabel, restaurant } from '@/shared/config/restaurant';
 export function ShopFooter() {
   return (
     <footer className="mt-24 overflow-hidden border-t border-line">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-10 px-4 pt-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
         <div className="flex flex-col gap-2 text-[15px] text-ink-soft">
           <p className="font-semibold text-ink">{restaurant.legalName}</p>
           <p>{restaurant.address}</p>
           <p>Every day, {hoursLabel}</p>
-          <a href={`tel:${restaurant.phone}`} className="font-mono text-ink hover:text-tomato-deep">
+          <a href={`tel:${restaurant.phone}`} className="inline-flex min-h-11 items-center self-start font-mono text-ink hover:text-tomato-deep">
             {restaurant.phoneDisplay}
           </a>
         </div>
-        <nav aria-label="Footer" className="flex flex-col gap-2 text-[15px]">
-          <Link to="/menu" className="font-semibold hover:text-tomato-deep">
+        <nav aria-label="Footer" className="flex flex-col text-[15px]">
+          <Link to="/menu" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
             Menu
           </Link>
-          <Link to="/track" className="font-semibold hover:text-tomato-deep">
+          <Link to="/track" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
             Track an order
           </Link>
         </nav>
-        <div className="flex flex-col gap-2 text-[15px]">
-          <Link to="/dashboard" className="font-semibold hover:text-tomato-deep">
+        <div className="flex flex-col text-[15px]">
+          <Link to="/dashboard" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
             Staff sign in
           </Link>
           <p className="text-muted">Cash on delivery or at pickup.</p>

@@ -16,19 +16,48 @@ import { useCartQuantity } from '../../store/cart.store';
 import { AddControl } from './AddControl';
 import { ProductTags } from './ProductTags';
 
-function Details({ product, onDone }: { product: Product; onDone: () => void }) {
+function AddBar({ product, onDone }: { product: Product; onDone: () => void }) {
   const [quantity, setQuantity] = useState(1);
   const inCart = useCartQuantity(product.id);
   const addToCart = useAddToCart();
+
+  return (
+    <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-line bg-surface/95 px-5 py-3 backdrop-blur-md min-[380px]:px-6 sm:static sm:px-8 sm:py-4">
+      {inCart > 0 && (
+        <p className="text-sm text-muted">
+          Already in your order: <span className="font-mono font-semibold text-ink">{inCart}</span>
+        </p>
+      )}
+      <div className="flex items-center gap-3">
+        <QuantityStepper value={quantity} onChange={setQuantity} itemName={product.name} />
+        <Button
+          size="lg"
+          className="min-w-0 flex-1 px-4"
+          data-autofocus
+          onClick={() => {
+            addToCart(product, quantity);
+            onDone();
+          }}
+        >
+          Add · {formatMoney(product.price * quantity)}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function Details({ product, onDone }: { product: Product; onDone: () => void }) {
   const categories = useCategories();
   const products = useProducts();
   const { open } = useProductDialog();
   const category = categories.data?.find((item) => item.id === product.categoryId);
   const pairings = suggestPairings(product, categories.data ?? [], products.data ?? []);
 
+  // Phones: the whole sheet scrolls and the add bar sticks to its bottom edge, always in thumb reach.
+  // Larger screens: photo on the left, details scroll on the right above the add bar.
   return (
-    <div className="grid overflow-y-auto sm:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-      <div className="relative aspect-[4/3] bg-paper-deep sm:aspect-auto sm:min-h-full">
+    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] sm:grid-rows-[minmax(0,1fr)] sm:overflow-hidden">
+      <div className="relative aspect-[16/11] bg-paper-deep sm:aspect-auto sm:h-full sm:min-h-[460px]">
         <img
           src={photo(product.imageUrl, 900, 900)}
           alt={product.name}
@@ -36,60 +65,42 @@ function Details({ product, onDone }: { product: Product; onDone: () => void }) 
         />
       </div>
 
-      <div className="flex flex-col gap-5 p-6 sm:p-8">
-        <div className="flex flex-col gap-2">
-          {category && <p className="text-sm font-semibold text-tomato-deep">{category.name}</p>}
-          <h2 className="display text-[2.6rem] sm:text-5xl">{product.name}</h2>
-          <Price amount={product.price} className="text-lg text-ink" />
-        </div>
-        <p className="text-[15px] leading-relaxed text-ink-soft">{product.description}</p>
-        <ProductTags tags={product.tags} />
+      <div className="flex min-h-0 flex-col">
+        <div className="flex flex-col gap-5 p-5 min-[380px]:p-6 sm:flex-1 sm:overflow-y-auto sm:p-8">
+          <div className="flex flex-col gap-2">
+            {category && <p className="text-sm font-semibold text-tomato-deep">{category.name}</p>}
+            <h2 className="display text-[clamp(2.1rem,10vw,2.6rem)] sm:text-5xl">{product.name}</h2>
+            <Price amount={product.price} className="text-lg text-ink" />
+          </div>
+          <p className="text-[15px] leading-relaxed text-ink-soft">{product.description}</p>
+          <ProductTags tags={product.tags} />
 
-        {product.isAvailable ? (
-          <div className="flex flex-col gap-3 border-t border-line pt-5">
-            {inCart > 0 && (
-              <p className="text-sm text-muted">
-                Already in your order: <span className="font-mono font-semibold text-ink">{inCart}</span>
-              </p>
-            )}
-            <div className="flex items-center gap-3">
-              <QuantityStepper value={quantity} onChange={setQuantity} itemName={product.name} />
-              <Button
-                size="lg"
-                className="flex-1"
-                data-autofocus
-                onClick={() => {
-                  addToCart(product, quantity);
-                  onDone();
-                }}
-              >
-                Add · {formatMoney(product.price * quantity)}
-              </Button>
+          {!product.isAvailable && (
+            <p className="rounded-field bg-paper-deep px-4 py-3 text-sm font-medium text-ink-soft">
+              Sold out for today. It is usually back tomorrow.
+            </p>
+          )}
+
+          {pairings.length > 0 && (
+            <div className="flex flex-col gap-3 border-t border-line pt-5">
+              <h3 className="font-display text-lg font-bold">Goes well with</h3>
+              <ul className="flex flex-col gap-3">
+                {pairings.map((item) => (
+                  <li key={item.id} className="flex items-center gap-3">
+                    <img src={photo(item.imageUrl, 120, 120)} alt="" className="size-12 shrink-0 rounded-thumb object-cover" />
+                    <button type="button" onClick={() => open(item.id)} className="min-h-11 min-w-0 flex-1 text-left">
+                      <span className="block truncate text-[15px] font-semibold hover:underline">{item.name}</span>
+                      <Price amount={item.price} className="text-sm text-muted" />
+                    </button>
+                    <AddControl product={item} />
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-        ) : (
-          <p className="rounded-field bg-paper-deep px-4 py-3 text-sm font-medium text-ink-soft">
-            Sold out for today. It is usually back tomorrow.
-          </p>
-        )}
+          )}
+        </div>
 
-        {pairings.length > 0 && (
-          <div className="flex flex-col gap-3 border-t border-line pt-5">
-            <h3 className="font-display text-lg font-bold">Goes well with</h3>
-            <ul className="flex flex-col gap-3">
-              {pairings.map((item) => (
-                <li key={item.id} className="flex items-center gap-3">
-                  <img src={photo(item.imageUrl, 120, 120)} alt="" className="size-12 rounded-thumb object-cover" />
-                  <button type="button" onClick={() => open(item.id)} className="min-w-0 flex-1 text-left">
-                    <span className="block truncate text-[15px] font-semibold hover:underline">{item.name}</span>
-                    <Price amount={item.price} className="text-sm text-muted" />
-                  </button>
-                  <AddControl product={item} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {product.isAvailable && <AddBar product={product} onDone={onDone} />}
       </div>
     </div>
   );
@@ -105,7 +116,7 @@ export function ProductDialog() {
 
   return (
     <Overlay open={Boolean(openId)} onClose={close} label={product?.name ?? 'Dish details'} className="sm:max-w-4xl">
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-3 z-20">
         <IconButton icon={X} label="Close" variant="secondary" onClick={close} className="shadow-lift" />
       </div>
       {product ? (
@@ -115,7 +126,7 @@ export function ProductDialog() {
           <ErrorState error={fallback.error} title="We could not find this dish" compact />
         </div>
       ) : (
-        <div className="grid gap-6 p-6 sm:grid-cols-2" role="status" aria-label="Loading dish">
+        <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2" role="status" aria-label="Loading dish">
           <Skeleton className="aspect-square w-full rounded-panel" />
           <div className="flex flex-col gap-3">
             <Skeleton className="h-4 w-24" />

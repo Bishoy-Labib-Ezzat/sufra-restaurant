@@ -9,25 +9,41 @@ import type { Order } from '@/shared/types';
 /** The pipeline at a glance: how many orders sit at each step, and how long the oldest has waited. */
 export function PassStrip({ orders, now }: { orders: Order[]; now: number }) {
   return (
-    <section aria-label="Orders in progress" className="scrollbar-none -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div className="flex min-w-max items-stretch rounded-panel bg-ink p-2 text-paper sm:min-w-0">
+    // Phones: one row per status (name and wait on the left, count on the right).
+    // From tablet width: the horizontal pipeline with arrows between steps.
+    <section aria-label="Orders in progress">
+      <div className="flex flex-col rounded-panel bg-ink p-2 text-paper md:flex-row md:items-stretch">
         {OPEN_STATUSES.map((status, index) => {
           const lane = orders.filter((order) => order.status === status);
           const oldest = lane.reduce<string | null>((min, order) => (!min || order.createdAt < min ? order.createdAt : min), null);
           const urgent = status === 'new' && lane.length > 0;
           return (
             <Fragment key={status}>
-              {index > 0 && <CaretRight size={18} weight="bold" className="shrink-0 self-center text-paper/30" aria-hidden />}
+              {index > 0 && (
+                <CaretRight size={18} weight="bold" className="hidden shrink-0 self-center text-paper/30 md:block" aria-hidden />
+              )}
               <Link
                 to="/dashboard/orders"
-                className="flex w-40 flex-col gap-2 rounded-[16px] px-4 py-3 transition-colors hover:bg-paper/8 sm:w-auto sm:flex-1"
+                className={cn(
+                  'grid min-h-14 grid-cols-[1fr_auto] items-center gap-x-3 rounded-[16px] px-4 py-2.5 transition-colors hover:bg-paper/8',
+                  'md:flex md:flex-1 md:flex-col md:items-start md:gap-2 md:py-3',
+                )}
               >
-                <span className="flex items-center gap-2 text-sm font-semibold text-paper/80">
+                <span className="col-start-1 row-start-1 flex items-center gap-2 text-sm font-semibold text-paper/80">
                   <span className={cn('size-2 rounded-full', STATUS_META[status].tone.marker)} aria-hidden />
                   {STATUS_META[status].label}
                 </span>
-                <span className={cn('display text-6xl leading-none', urgent && 'text-[#ff8a6f]')}>{lane.length}</span>
-                <span className="text-xs text-paper/60">{oldest ? `Oldest ${formatElapsed(oldest, now)}` : 'Nothing waiting'}</span>
+                <span
+                  className={cn(
+                    'display col-start-2 row-span-2 row-start-1 text-4xl leading-none md:text-6xl',
+                    urgent && 'text-[#ff8a6f]',
+                  )}
+                >
+                  {lane.length}
+                </span>
+                <span className="col-start-1 row-start-2 text-xs text-paper/60">
+                  {oldest ? `Oldest ${formatElapsed(oldest, now)}` : 'Nothing waiting'}
+                </span>
               </Link>
             </Fragment>
           );

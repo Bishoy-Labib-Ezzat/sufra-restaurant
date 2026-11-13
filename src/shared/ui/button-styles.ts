@@ -11,8 +11,9 @@ const variants: Record<Variant, string> = {
   danger: 'bg-danger text-white hover:bg-[#912018]',
 };
 
+// On touch screens every control grows to at least 44px, the minimum comfortable thumb target.
 const sizes: Record<Size, string> = {
-  sm: 'h-9 gap-1.5 px-4 text-sm',
+  sm: 'h-9 gap-1.5 px-4 text-sm pointer-coarse:h-11',
   md: 'h-11 gap-2 px-5 text-[15px]',
   lg: 'h-14 gap-2.5 px-7 text-base',
 };

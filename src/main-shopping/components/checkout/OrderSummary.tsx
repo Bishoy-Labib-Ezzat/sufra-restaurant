@@ -59,7 +59,8 @@ export function OrderSummary({ lines, unavailableIds, totals, fulfillment, zone,
         </div>
       </dl>
 
-      <Button type="submit" size="lg" block loading={submitting} className="mt-6">
+      {/* Phones and tablets submit from the sticky bar instead (MobileCheckoutBar). */}
+      <Button type="submit" size="lg" block loading={submitting} className="mt-6 hidden lg:flex">
         {submitting ? 'Placing your order' : needsZone ? 'Place order' : `Place order · ${formatMoney(totals.total)}`}
       </Button>
       <p className="mt-3 text-center text-sm text-muted">

@@ -2,8 +2,9 @@ import { useId, type ComponentProps, type ReactNode } from 'react';
 import { CaretDown, Check, WarningCircle } from '@phosphor-icons/react';
 import { cn } from '@/shared/lib/cn';
 
+// 16px text on phones: iOS Safari zooms the whole page into any field set smaller than that.
 const fieldBase =
-  'w-full rounded-field bg-surface px-4 text-[15px] text-ink ring-1 ring-inset ring-line-strong ' +
+  'w-full rounded-field bg-surface px-4 text-base text-ink ring-1 ring-inset ring-line-strong sm:text-[15px] ' +
   'placeholder:text-muted/80 transition-shadow duration-150 ' +
   'hover:ring-ink/40 focus:outline-none focus:ring-2 focus:ring-ink ' +
   'aria-invalid:ring-2 aria-invalid:ring-danger disabled:opacity-60';
@@ -76,7 +77,7 @@ export function Select({ className, children, ...props }: ComponentProps<'select
 
 export function Checkbox({ label, className, ...props }: ComponentProps<'input'> & { label: ReactNode }) {
   return (
-    <label className={cn('inline-flex cursor-pointer items-center gap-3 text-[15px] text-ink', className)}>
+    <label className={cn('inline-flex min-h-11 cursor-pointer items-center gap-3 text-[15px] text-ink', className)}>
       <span className="relative grid size-5 place-items-center">
         <input
           type="checkbox"
@@ -114,7 +115,7 @@ export function Switch({ checked, onChange, label, hideLabel, disabled, descript
       aria-label={hideLabel ? label : undefined}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="group inline-flex items-center gap-3 text-left disabled:opacity-50"
+      className={cn('group inline-flex min-h-11 items-center gap-3 text-left disabled:opacity-50', hideLabel && 'min-w-11 justify-center')}
     >
       <span
         className={cn(
@@ -177,7 +178,7 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
             onClick={() => onChange(option.value)}
             className={cn(
               'inline-flex items-center gap-1.5 rounded-full font-semibold whitespace-nowrap transition-colors duration-200',
-              size === 'sm' ? 'h-8 px-3.5 text-sm' : 'h-10 px-5 text-[15px]',
+              size === 'sm' ? 'h-8 px-3.5 text-sm pointer-coarse:h-10' : 'h-10 px-5 text-[15px] pointer-coarse:h-11',
               active ? 'bg-ink text-paper shadow-sm' : 'text-ink-soft hover:text-ink',
             )}
           >
@@ -200,7 +201,7 @@ export function Chip({ active, className, children, ...props }: ChipProps) {
       type="button"
       aria-pressed={active}
       className={cn(
-        'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200',
+        'inline-flex h-9 shrink-0 pointer-coarse:h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200',
         active ? 'bg-ink text-paper' : 'bg-surface text-ink ring-1 ring-inset ring-line hover:ring-line-strong',
         className,
       )}

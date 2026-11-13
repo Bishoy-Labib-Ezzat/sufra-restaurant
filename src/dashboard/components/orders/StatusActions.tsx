@@ -45,7 +45,7 @@ export function StatusActions({ order }: { order: Order }) {
           value=""
           disabled={busy}
           onChange={(event) => event.target.value && move(event.target.value as OrderStatus)}
-          className="h-11 w-auto rounded-full pr-10 text-sm font-semibold"
+          className="h-11 w-auto rounded-full pr-10 text-base font-semibold sm:text-sm"
         >
           <option value="">Move to…</option>
           {otherStatuses.map((status) => (

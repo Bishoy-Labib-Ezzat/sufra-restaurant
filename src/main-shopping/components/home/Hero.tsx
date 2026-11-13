@@ -19,7 +19,7 @@ export function Hero() {
       : { initial: { opacity: 0, y: 28 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay, ease } };
 
   return (
-    <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 pt-8 pb-20 sm:px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 lg:pt-12">
+    <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-12 px-4 pt-8 pb-20 sm:px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 lg:pt-12">
       <div className="flex flex-col items-start gap-7 lg:col-span-6">
         <motion.p
           {...rise(0)}
@@ -45,7 +45,7 @@ export function Hero() {
             Start your order
             <ArrowRight size={18} weight="bold" aria-hidden className="transition-transform group-hover:translate-x-1" />
           </Link>
-          <Link to="/track" className="text-[15px] font-semibold underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+          <Link to="/track" className="inline-flex min-h-11 items-center text-[15px] font-semibold underline decoration-line-strong underline-offset-4 hover:decoration-ink">
             Track an order
           </Link>
         </motion.div>

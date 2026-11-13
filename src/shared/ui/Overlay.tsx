@@ -111,7 +111,7 @@ function Panel({ onClose, label, placement = 'center', className, children }: Om
         aria-label={label}
         tabIndex={-1}
         className={cn(
-          'relative flex max-h-[94dvh] w-full flex-col overflow-hidden bg-surface shadow-float focus:outline-none',
+          'relative flex max-h-[94dvh] w-full flex-col overflow-hidden bg-surface pb-[env(safe-area-inset-bottom)] shadow-float focus:outline-none',
           right ? 'h-dvh max-h-dvh sm:max-w-md' : 'rounded-t-panel sm:max-w-lg sm:rounded-panel',
           className,
         )}

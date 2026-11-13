@@ -80,7 +80,7 @@ export function DashboardLayout() {
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-ink px-4 text-paper lg:hidden">
         <Logo tone="paper" className="scale-90 origin-left" />
         {user && (
-          <button type="button" onClick={() => setAccountOpen(true)} aria-label="Account and settings">
+          <button type="button" onClick={() => setAccountOpen(true)} aria-label="Account and settings" className="-mr-1 grid size-11 place-items-center rounded-full">
             <Avatar name={user.name} className="size-9" />
           </button>
         )}

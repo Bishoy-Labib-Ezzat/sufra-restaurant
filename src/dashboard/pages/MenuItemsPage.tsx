@@ -52,6 +52,50 @@ function MenuItemsScreen() {
   const soldOut = products.data?.filter((product) => !product.isAvailable).length ?? 0;
   const busyId = patch.isPending ? patch.variables?.product.id : undefined;
 
+  const renderAvailability = (product: Product) => (
+    <Switch
+      checked={product.isAvailable}
+      hideLabel
+      label={`${product.name} on sale today`}
+      disabled={busyId === product.id}
+      onChange={(isAvailable) => patch.mutate({ product, changes: { isAvailable } })}
+    />
+  );
+
+  const renderFeatured = (product: Product) => (
+    <button
+      type="button"
+      aria-pressed={product.isFeatured}
+      aria-label={`Feature ${product.name} on the home page`}
+      disabled={busyId === product.id}
+      onClick={() => patch.mutate({ product, changes: { isFeatured: !product.isFeatured } })}
+      className={cn(
+        'grid size-11 place-items-center rounded-full transition-colors hover:bg-ink/6',
+        product.isFeatured ? 'text-tomato' : 'text-line-strong',
+      )}
+    >
+      <Star size={22} weight={product.isFeatured ? 'fill' : 'bold'} />
+    </button>
+  );
+
+  const renderActions = (product: Product) => (
+    <>
+      <Link
+        to={`/dashboard/menu/${product.id}`}
+        aria-label={`Edit ${product.name}`}
+        className={cn(buttonStyles({ variant: 'ghost' }), 'size-11 px-0')}
+      >
+        <PencilSimple size={18} weight="bold" />
+      </Link>
+      <IconButton
+        icon={Trash}
+        label={`Delete ${product.name}`}
+        onClick={() => setDeleting(product)}
+        className="hover:bg-danger-wash hover:text-danger"
+      />
+    </>
+  );
+
   return (
     <>
       <PageHeader
@@ -125,83 +169,80 @@ function MenuItemsScreen() {
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-panel bg-surface ring-1 ring-line">
-          <table className="w-full text-left text-[15px]">
-            <thead className="border-b border-line text-sm whitespace-nowrap text-muted">
-              <tr>
-                <th scope="col" className="px-5 py-3 font-semibold">Item</th>
-                <th scope="col" className="hidden px-5 py-3 font-semibold xl:table-cell">Category</th>
-                <th scope="col" className="hidden px-5 py-3 text-right font-semibold sm:table-cell">Price</th>
-                <th scope="col" className="px-5 py-3 font-semibold">On sale</th>
-                <th scope="col" className="hidden px-5 py-3 font-semibold md:table-cell">Home page</th>
-                <th scope="col" className="px-5 py-3 text-right font-semibold"><span className="sr-only">Actions</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((product) => (
-                <tr key={product.id} className="border-b border-line/70 last:border-0">
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={photo(product.imageUrl, 112, 112)}
-                        alt=""
-                        className={cn('size-12 shrink-0 rounded-thumb object-cover', !product.isAvailable && 'grayscale')}
-                      />
-                      <div className="min-w-0">
-                        <Link to={`/dashboard/menu/${product.id}`} className="font-semibold hover:underline">
-                          {product.name}
-                        </Link>
-                        <p className="text-sm text-muted xl:hidden">{categoryName.get(product.categoryId)}</p>
-                        <Price amount={product.price} className="text-sm sm:hidden" />
-                        <ProductTags tags={product.tags} className="mt-1 hidden md:flex" />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="hidden px-5 py-3 text-ink-soft xl:table-cell">{categoryName.get(product.categoryId)}</td>
-                  <td className="hidden px-5 py-3 text-right sm:table-cell">
-                    <Price amount={product.price} />
-                  </td>
-                  <td className="px-5 py-3">
-                    <Switch
-                      checked={product.isAvailable}
-                      hideLabel
-                      label={`${product.name} on sale today`}
-                      disabled={busyId === product.id}
-                      onChange={(isAvailable) => patch.mutate({ product, changes: { isAvailable } })}
+        <>
+          {/* Phones: one card per item, with every control on screen. */}
+          <ul className="flex flex-col divide-y divide-line overflow-hidden rounded-panel bg-surface ring-1 ring-line md:hidden">
+            {visible.map((product) => (
+              <li key={product.id} className="flex flex-col gap-1 px-4 pt-3 pb-2">
+                <div className="flex items-center gap-3">
+                  <Link to={`/dashboard/menu/${product.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                    <img
+                      src={photo(product.imageUrl, 112, 112)}
+                      alt=""
+                      className={cn('size-14 shrink-0 rounded-thumb object-cover', !product.isAvailable && 'grayscale')}
                     />
-                  </td>
-                  <td className="hidden px-5 py-3 md:table-cell">
-                    <button
-                      type="button"
-                      aria-pressed={product.isFeatured}
-                      aria-label={`Feature ${product.name} on the home page`}
-                      disabled={busyId === product.id}
-                      onClick={() => patch.mutate({ product, changes: { isFeatured: !product.isFeatured } })}
-                      className={cn(
-                        'grid size-10 place-items-center rounded-full transition-colors hover:bg-ink/6',
-                        product.isFeatured ? 'text-tomato' : 'text-line-strong',
-                      )}
-                    >
-                      <Star size={22} weight={product.isFeatured ? 'fill' : 'bold'} />
-                    </button>
-                  </td>
-                  <td className="px-5 py-3">
-                    <div className="flex justify-end gap-1">
-                      <Link
-                        to={`/dashboard/menu/${product.id}`}
-                        aria-label={`Edit ${product.name}`}
-                        className={cn(buttonStyles({ variant: 'ghost' }), 'size-10 px-0')}
-                      >
-                        <PencilSimple size={18} weight="bold" />
-                      </Link>
-                      <IconButton icon={Trash} label={`Delete ${product.name}`} onClick={() => setDeleting(product)} className="size-10 hover:bg-danger-wash hover:text-danger" />
-                    </div>
-                  </td>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold">{product.name}</span>
+                      <span className="block truncate text-sm text-muted">{categoryName.get(product.categoryId)}</span>
+                      <Price amount={product.price} className="text-sm" />
+                    </span>
+                  </Link>
+                  {renderAvailability(product)}
+                </div>
+                <div className="flex items-center justify-end gap-1">
+                  {renderFeatured(product)}
+                  {renderActions(product)}
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="relative hidden overflow-hidden rounded-panel bg-surface ring-1 ring-line md:block">
+            <table className="w-full text-left text-[15px]">
+              <thead className="border-b border-line text-sm whitespace-nowrap text-muted">
+                <tr>
+                  <th scope="col" className="px-5 py-3 font-semibold">Item</th>
+                  <th scope="col" className="hidden px-5 py-3 font-semibold xl:table-cell">Category</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">Price</th>
+                  <th scope="col" className="px-5 py-3 font-semibold">On sale</th>
+                  <th scope="col" className="px-5 py-3 font-semibold">Home page</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold"><span className="sr-only">Actions</span></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visible.map((product) => (
+                  <tr key={product.id} className="border-b border-line/70 last:border-0">
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={photo(product.imageUrl, 112, 112)}
+                          alt=""
+                          className={cn('size-12 shrink-0 rounded-thumb object-cover', !product.isAvailable && 'grayscale')}
+                        />
+                        <div className="min-w-0">
+                          <Link to={`/dashboard/menu/${product.id}`} className="font-semibold hover:underline">
+                            {product.name}
+                          </Link>
+                          <p className="text-sm text-muted xl:hidden">{categoryName.get(product.categoryId)}</p>
+                          <ProductTags tags={product.tags} className="mt-1" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden px-5 py-3 text-ink-soft xl:table-cell">{categoryName.get(product.categoryId)}</td>
+                    <td className="px-5 py-3 text-right">
+                      <Price amount={product.price} />
+                    </td>
+                    <td className="px-5 py-3">{renderAvailability(product)}</td>
+                    <td className="px-5 py-3">{renderFeatured(product)}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex justify-end gap-1">{renderActions(product)}</div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <ConfirmDialog

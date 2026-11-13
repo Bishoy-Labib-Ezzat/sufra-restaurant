@@ -137,7 +137,7 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
               }
             }}
             placeholder="Or paste an image link"
-            className="h-11 pl-10 text-sm"
+            className="h-11 pl-10 text-base sm:text-sm"
           />
         </label>
         <Button variant="secondary" onClick={applyLink} disabled={!link.trim()}>

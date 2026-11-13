@@ -119,10 +119,10 @@ function ProductEditor({ product, categories }: { product?: Product; categories:
         }
       />
 
-      <form onSubmit={onSubmit} noValidate className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <form onSubmit={onSubmit} noValidate className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-6">
           <Panel title="Basics">
-            <div className="grid gap-5 sm:grid-cols-[1fr_180px]">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_180px]">
               <Field label="Name" error={errors.name?.message}>
                 {({ id, describedBy, invalid }) => (
                   <Input id={id} aria-describedby={describedBy} aria-invalid={invalid} {...register('name')} />

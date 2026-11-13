@@ -40,7 +40,7 @@ function Tile({ to, title, description, image, imageAlt, tone }: TileProps) {
 
 export function EatDrinkTiles() {
   return (
-    <section aria-label="Browse by type" className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-[1.3fr_1fr] lg:px-8">
+    <section aria-label="Browse by type" className="mx-auto grid grid-cols-1 max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-[1.3fr_1fr] lg:px-8">
       <Tile
         to="/menu?kind=food"
         title="Eat"

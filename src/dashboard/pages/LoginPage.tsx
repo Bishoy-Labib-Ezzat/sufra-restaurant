@@ -63,7 +63,7 @@ export function LoginPage() {
   });
 
   return (
-    <div className="grid min-h-dvh bg-paper lg:grid-cols-[1.1fr_1fr]">
+    <div className="grid grid-cols-1 min-h-dvh bg-paper lg:grid-cols-[1.1fr_1fr]">
       <div className="relative hidden overflow-hidden bg-ink lg:block">
         <img src={photo(GRILL, 1400, 1800)} alt="" className="absolute inset-0 size-full object-cover opacity-70" />
         <div className="absolute inset-0 bg-linear-to-t from-ink via-ink/30 to-transparent" />

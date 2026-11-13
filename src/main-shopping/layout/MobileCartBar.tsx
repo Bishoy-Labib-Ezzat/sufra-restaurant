@@ -24,7 +24,7 @@ export function MobileCartBar() {
           animate={{ y: 0 }}
           exit={{ y: 96 }}
           transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-          className="fixed inset-x-3 bottom-3 z-30 md:hidden"
+          className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 md:hidden"
         >
           <button
             type="button"

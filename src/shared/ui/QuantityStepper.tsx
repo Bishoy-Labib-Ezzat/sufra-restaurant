@@ -29,7 +29,7 @@ export function QuantityStepper({
   const showRemove = removable && value <= 1;
   const button = cn(
     'grid place-items-center rounded-full transition-colors duration-150 disabled:opacity-35',
-    size === 'sm' ? 'size-8' : 'size-10',
+    size === 'sm' ? 'size-8 pointer-coarse:size-10' : 'size-10 pointer-coarse:size-11',
     tone === 'ink' ? 'text-paper hover:bg-paper/15' : 'text-ink hover:bg-ink/8',
   );
 

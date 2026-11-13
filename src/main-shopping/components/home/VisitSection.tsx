@@ -7,7 +7,7 @@ const INTERIOR = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4';
 
 export function VisitSection() {
   return (
-    <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pt-24 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:px-8">
+    <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-4 pt-24 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:px-8">
       <div className="aspect-[4/3] overflow-hidden rounded-panel bg-paper-deep">
         <img
           src={photo(INTERIOR, 1100, 825)}

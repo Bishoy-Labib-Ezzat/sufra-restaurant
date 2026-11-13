@@ -58,7 +58,7 @@ export function OverviewPage() {
           <PassStrip orders={open.data.items} now={now} />
         )}
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
           {open.data ? <AttentionQueue orders={open.data.items} now={now} /> : <Skeleton className="h-72 rounded-panel" />}
           {overview.data ? (
             <TodayTally overview={overview.data} />
@@ -71,7 +71,7 @@ export function OverviewPage() {
 
         {overview.data && (
           <>
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
               <Panel
                 title="Revenue, last 7 days"
                 aside={`${formatMoney(overview.data.revenueByDay.reduce((sum, day) => sum + day.revenue, 0))} in total`}
@@ -99,7 +99,7 @@ export function OverviewPage() {
               </Panel>
             </div>
 
-            <div className="grid gap-5 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
               <Panel title="Orders by hour" aside="Today">
                 <ColumnChart
                   caption="Orders placed today, per hour of service"

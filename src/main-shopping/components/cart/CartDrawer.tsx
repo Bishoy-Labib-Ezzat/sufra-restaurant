@@ -36,12 +36,12 @@ export function CartDrawer() {
         />
       ) : (
         <>
-          <ul className="flex-1 divide-y divide-line overflow-y-auto px-6">
+          <ul className="min-h-0 flex-1 divide-y divide-line overflow-y-auto overscroll-contain px-5 sm:px-6">
             {lines.map((line) => (
               <CartLineRow key={line.productId} line={line} />
             ))}
           </ul>
-          <div className="flex flex-col gap-4 border-t border-line bg-paper px-6 pt-5 pb-6">
+          <div className="flex flex-col gap-4 border-t border-line bg-paper px-5 pt-5 pb-5 sm:px-6 sm:pb-6">
             <div className="flex items-baseline justify-between">
               <span className="text-[15px] font-semibold">Subtotal</span>
               <Price amount={subtotal} strong className="text-lg" />

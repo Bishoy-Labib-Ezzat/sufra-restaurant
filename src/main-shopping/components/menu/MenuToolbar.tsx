@@ -61,14 +61,14 @@ export function MenuToolbar({ filters, onChange }: MenuToolbarProps) {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search dishes and drinks"
-            className="h-12 w-full rounded-full bg-surface pr-11 pl-11 text-[15px] ring-1 ring-line-strong ring-inset placeholder:text-muted focus:ring-2 focus:ring-ink focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+            className="h-12 w-full rounded-full bg-surface pr-12 pl-11 text-base ring-1 sm:text-[15px] ring-line-strong ring-inset placeholder:text-muted focus:ring-2 focus:ring-ink focus:outline-none [&::-webkit-search-cancel-button]:hidden"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
               aria-label="Clear search"
-              className="absolute top-1/2 right-2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
+              className="absolute top-1/2 right-1.5 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
             >
               <X size={14} weight="bold" />
             </button>

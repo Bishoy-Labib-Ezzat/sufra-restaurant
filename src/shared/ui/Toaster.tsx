@@ -43,7 +43,7 @@ function ToastItem({ toast }: { toast: Toast }) {
             toast.action?.onClick();
             dismiss(toast.id);
           }}
-          className="h-8 shrink-0 rounded-full bg-paper px-3.5 font-semibold text-ink transition hover:bg-white"
+          className="h-8 shrink-0 rounded-full pointer-coarse:h-10 bg-paper px-3.5 font-semibold text-ink transition hover:bg-white"
         >
           {toast.action.label}
         </button>
@@ -52,7 +52,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         type="button"
         aria-label="Dismiss"
         onClick={() => dismiss(toast.id)}
-        className="grid size-8 shrink-0 place-items-center rounded-full text-paper/70 transition hover:bg-paper/10 hover:text-paper"
+        className="grid size-8 shrink-0 pointer-coarse:size-10 place-items-center rounded-full text-paper/70 transition hover:bg-paper/10 hover:text-paper"
       >
         <X size={14} weight="bold" aria-hidden />
       </button>
@@ -65,7 +65,7 @@ export function Toaster() {
   return (
     <ol
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-4 bottom-4 z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:items-end"
+      className="pointer-events-none fixed inset-x-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:top-auto sm:right-6 sm:bottom-6 sm:items-end"
     >
       <AnimatePresence initial={false}>
         {toasts.map((toast) => (

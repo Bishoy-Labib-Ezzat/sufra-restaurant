@@ -113,27 +113,35 @@ export function ColumnChart({ data, caption, formatValue, formatTick, highlightK
         </div>
       </div>
       <div className="ml-10 grid" aria-hidden style={{ gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))` }}>
-        {data.map((datum) => (
+        {data.map((datum, index) => (
           <span
             key={datum.key}
-            className={cn('truncate text-center text-[11px] text-muted', datum.key === highlightKey && 'font-semibold text-ink')}
+            className={cn(
+              'truncate text-center text-[11px] text-muted',
+              datum.key === highlightKey && 'font-semibold text-ink',
+              // Dense axes on phones: label every other column so labels never collide.
+              data.length > 8 && index % 2 === 1 && datum.key !== highlightKey && 'max-sm:invisible',
+            )}
           >
             {datum.label}
           </span>
         ))}
       </div>
       <figcaption className="sr-only">{caption}</figcaption>
-      <table className="sr-only">
-        <caption>{caption}</caption>
-        <tbody>
-          {data.map((datum) => (
-            <tr key={datum.key}>
-              <th scope="row">{datum.longLabel}</th>
-              <td>{formatValue(datum.value)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* A <table> ignores the 1px width of .sr-only and would widen the page, so the wrapper is hidden instead. */}
+      <div className="sr-only">
+        <table>
+          <caption>{caption}</caption>
+          <tbody>
+            {data.map((datum) => (
+              <tr key={datum.key}>
+                <th scope="row">{datum.longLabel}</th>
+                <td>{formatValue(datum.value)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }

@@ -31,7 +31,7 @@ export function TrackOrderPage() {
   } = useForm<FormInput, unknown, FormOutput>({ resolver: zodResolver(schema), defaultValues: { code: '' } });
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-14 px-4 pt-12 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pt-20">
+    <div className="mx-auto grid grid-cols-1 max-w-7xl gap-14 px-4 pt-12 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pt-20">
       <div className="flex flex-col gap-4">
         <h1 className="display text-[clamp(3.5rem,8vw,6rem)] leading-[0.9]">Where is my food?</h1>
         <p className="max-w-[44ch] text-lg text-ink-soft">

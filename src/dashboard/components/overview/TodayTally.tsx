@@ -31,7 +31,7 @@ export function TodayTally({ overview }: { overview: DashboardOverview }) {
 
   return (
     <section aria-labelledby="tally-title" className="ticket bg-surface px-6 py-7 shadow-lift">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 id="tally-title" className="display text-3xl">
           Today so far
         </h2>

@@ -22,7 +22,7 @@ function MenuSkeleton() {
       {Array.from({ length: 2 }, (_, section) => (
         <div key={section} className="flex flex-col gap-6">
           <Skeleton className="h-12 w-64" />
-          <div className="grid gap-x-12 gap-y-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
             {Array.from({ length: 4 }, (_, row) => (
               <div key={row} className="flex gap-6">
                 <div className="flex flex-1 flex-col gap-2">
@@ -89,7 +89,7 @@ export function MenuPage() {
                   </h2>
                   <p className="text-[15px] text-muted">{category.description}</p>
                 </div>
-                <div className="grid gap-x-14 gap-y-2 pt-3 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-x-14 gap-y-2 pt-3 md:grid-cols-2">
                   {products.map((product) => (
                     <MenuItem key={product.id} product={product} onOpen={(item) => open(item.id)} />
                   ))}

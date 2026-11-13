@@ -15,8 +15,8 @@ export function CategoryNav({ sections, activeId }: { sections: MenuSection[]; a
   }, [activeId]);
 
   return (
-    <nav aria-label="Menu sections" className="sticky top-[68px] z-20 -mx-4 border-b border-line bg-paper/92 backdrop-blur-md sm:mx-0">
-      <div ref={scroller} className="scrollbar-none flex gap-1.5 overflow-x-auto px-4 py-3 sm:px-0">
+    <nav aria-label="Menu sections" className="sticky top-[calc(68px+env(safe-area-inset-top))] z-20 -mx-4 border-b border-line bg-paper/92 backdrop-blur-md sm:mx-0">
+      <div ref={scroller} className="scrollbar-none flex gap-1.5 overflow-x-auto px-4 py-3 pointer-coarse:py-2 sm:px-0">
         {sections.map(({ category, products }) => {
           const id = sectionId(category.slug);
           const active = id === activeId;
@@ -31,7 +31,7 @@ export function CategoryNav({ sections, activeId }: { sections: MenuSection[]; a
                 document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
               className={cn(
-                'inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200',
+                'inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-4 pointer-coarse:h-11 text-sm font-semibold whitespace-nowrap transition-colors duration-200',
                 active ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-ink/6 hover:text-ink',
               )}
             >

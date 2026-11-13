@@ -97,6 +97,20 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-padding-top: 9rem;
+    /* Keep text at the designed size when a phone rotates to landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* No double-tap-to-zoom delay on controls; pinch zoom stays available. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  [role='button'] {
+    touch-action: manipulation;
   }
   body {
     min-height: 100dvh;

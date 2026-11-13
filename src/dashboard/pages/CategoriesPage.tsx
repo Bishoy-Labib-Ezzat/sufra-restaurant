@@ -60,7 +60,7 @@ function CategoriesScreen() {
       ) : sorted.length === 0 ? (
         <EmptyState icon={Tag} title="No categories yet" description="Create one to start building the menu." />
       ) : (
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
           {GROUPS.map(({ kind, title }) => {
             const group = sorted.filter((category) => category.kind === kind);
             return (
@@ -70,8 +70,23 @@ function CategoriesScreen() {
                 ) : (
                   <ol className="flex flex-col divide-y divide-line">
                     {group.map((category, index) => (
-                      <li key={category.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                        <div className="flex flex-col">
+                      // Phones: name and description get a full-width line and the controls sit on a row below.
+                      // From sm: one line, with the reorder arrows stacked on the left.
+                      <li
+                        key={category.id}
+                        className="flex flex-wrap items-center gap-x-1 gap-y-1 py-3 first:pt-0 last:pb-0 sm:flex-nowrap sm:gap-3"
+                      >
+                        <div className="order-1 min-w-0 basis-full sm:order-2 sm:basis-auto sm:flex-1">
+                          <p className="truncate font-display text-xl font-bold">{category.name}</p>
+                          {category.description && <p className="truncate text-sm text-muted">{category.description}</p>}
+                        </div>
+                        <Link
+                          to={`/dashboard/menu?category=${category.id}`}
+                          className="order-2 mr-auto inline-flex min-h-11 shrink-0 items-center font-mono text-xs whitespace-nowrap font-semibold text-ink-soft underline-offset-4 hover:underline sm:order-3 sm:mr-0 sm:min-h-0 sm:rounded-full sm:bg-paper-deep sm:px-3 sm:py-1 sm:text-ink sm:no-underline sm:hover:bg-line"
+                        >
+                          {pluralize(category.productCount, 'item')}
+                        </Link>
+                        <div className="order-3 flex shrink-0 sm:order-1 sm:flex-col">
                           <IconButton
                             icon={ArrowUp}
                             size="sm"
@@ -89,22 +104,17 @@ function CategoriesScreen() {
                             className="size-8"
                           />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-display text-xl font-bold">{category.name}</p>
-                          {category.description && <p className="truncate text-sm text-muted">{category.description}</p>}
-                        </div>
-                        <Link
-                          to={`/dashboard/menu?category=${category.id}`}
-                          className="shrink-0 rounded-full bg-paper-deep px-3 py-1 font-mono text-xs font-semibold hover:bg-line"
-                        >
-                          {pluralize(category.productCount, 'item')}
-                        </Link>
-                        <IconButton icon={PencilSimple} label={`Edit ${category.name}`} onClick={() => setEditing(category)} />
+                        <IconButton
+                          icon={PencilSimple}
+                          label={`Edit ${category.name}`}
+                          onClick={() => setEditing(category)}
+                          className="order-4"
+                        />
                         <IconButton
                           icon={Trash}
                           label={`Delete ${category.name}`}
                           onClick={() => setDeleting(category)}
-                          className="hover:bg-danger-wash hover:text-danger"
+                          className="order-5 hover:bg-danger-wash hover:text-danger"
                         />
                       </li>
                     ))}

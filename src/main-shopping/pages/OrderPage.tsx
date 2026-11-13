@@ -53,7 +53,7 @@ export function OrderPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 pt-14 sm:px-6 lg:grid-cols-[1fr_440px] lg:px-8" role="status" aria-label="Loading your order">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-12 px-4 pt-14 sm:px-6 lg:grid-cols-[1fr_440px] lg:px-8" role="status" aria-label="Loading your order">
         <div className="flex flex-col gap-4">
           <Skeleton className="h-16 w-3/4" />
           <Skeleton className="h-5 w-1/2" />
@@ -91,7 +91,7 @@ export function OrderPage() {
   const closed = isTerminal(tracking.status);
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-12 px-4 pt-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-16 lg:px-8 lg:pt-16">
+    <div className="mx-auto grid grid-cols-1 max-w-7xl gap-12 px-4 pt-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-16 lg:px-8 lg:pt-16">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col items-start gap-5">
           {justPlaced && (

@@ -52,6 +52,12 @@ export function useCheckout() {
     if (products.data) syncWithCatalog(products.data);
   }, [products.data, syncWithCatalog]);
 
+  // The area <select> only gets its options once zones load, so a remembered area set before that
+  // is not shown. Re-apply it so the dropdown matches the form (and the fee in the summary).
+  useEffect(() => {
+    if (zones.data) form.setValue('zoneId', form.getValues('zoneId'));
+  }, [zones.data, form]);
+
   const unavailable = useMemo(() => {
     if (!products.data) return [];
     const available = new Set(products.data.filter((product) => product.isAvailable).map((product) => product.id));

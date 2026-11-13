@@ -47,7 +47,7 @@ export function IconButton({ icon: Icon, label, variant = 'ghost', size = 'md', 
       type="button"
       aria-label={label}
       title={label}
-      className={cn(buttonStyles({ variant }), size === 'sm' ? 'size-9 px-0' : 'size-11 px-0', className)}
+      className={cn(buttonStyles({ variant }), size === 'sm' ? 'size-9 px-0 pointer-coarse:size-11' : 'size-11 px-0', className)}
       {...props}
     >
       <Icon size={size === 'sm' ? 16 : 20} weight="bold" aria-hidden />
