@@ -1,4 +1,5 @@
 import { Check } from '@phosphor-icons/react';
+import { t } from '@/shared/i18n';
 import { formatTime } from '@/shared/lib/format';
 import { customerStatusCopy, ORDER_FLOW } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
@@ -10,7 +11,7 @@ export function OrderProgress({ tracking }: { tracking: OrderTracking }) {
   const current = ORDER_FLOW.indexOf(tracking.status as (typeof ORDER_FLOW)[number]);
 
   return (
-    <ol className="flex flex-col" aria-label="Order progress">
+    <ol className="flex flex-col" aria-label={t.shop.order.progress}>
       {ORDER_FLOW.map((status, index) => {
         const state = index < current ? 'done' : index === current ? 'current' : 'todo';
         const copy = customerStatusCopy(status, tracking.fulfillment);

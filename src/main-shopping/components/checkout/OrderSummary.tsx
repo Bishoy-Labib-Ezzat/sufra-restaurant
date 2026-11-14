@@ -1,10 +1,11 @@
 import { restaurant } from '@/shared/config/restaurant';
-import { formatMoney, pluralize } from '@/shared/lib/format';
+import { fill, plural, t } from '@/shared/i18n';
+import { formatMoney } from '@/shared/lib/format';
 import type { OrderTotals } from '@/shared/lib/pricing';
 import { Button } from '@/shared/ui/Button';
 import { Price } from '@/shared/ui/Price';
 import type { DeliveryZone, FulfillmentType } from '@/shared/types';
-import type { CartLine } from '../../store/cart.store';
+import type { CartLine } from '../../hooks/useCart';
 import { CartLineRow } from '../cart/CartLineRow';
 
 interface OrderSummaryProps {
@@ -22,8 +23,8 @@ export function OrderSummary({ lines, unavailableIds, totals, fulfillment, zone,
   return (
     <div className="ticket bg-surface px-6 py-8 shadow-lift">
       <div className="flex items-baseline justify-between">
-        <h2 className="display text-4xl">Your order</h2>
-        <span className="font-mono text-sm text-muted">{pluralize(totals.itemCount, 'item')}</span>
+        <h2 className="display text-4xl">{t.shop.checkout.summaryTitle}</h2>
+        <span className="font-mono text-sm text-muted">{plural(t.plurals.items, totals.itemCount)}</span>
       </div>
 
       <ul className="mt-4 divide-y divide-line">
@@ -34,25 +35,27 @@ export function OrderSummary({ lines, unavailableIds, totals, fulfillment, zone,
 
       <dl className="mt-4 flex flex-col gap-2 border-t border-dashed border-line-strong pt-5 text-[15px]">
         <div className="flex justify-between">
-          <dt className="text-muted">Subtotal</dt>
+          <dt className="text-muted">{t.common.subtotal}</dt>
           <dd>
             <Price amount={totals.subtotal} className="text-sm" />
           </dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-muted">{fulfillment === 'pickup' ? 'Pickup' : zone ? `Delivery to ${zone.name}` : 'Delivery'}</dt>
-          <dd className="text-right">
+          <dt className="text-muted">
+            {fulfillment === 'pickup' ? t.common.pickup : zone ? fill(t.shop.checkout.deliveryTo, { zone: zone.name }) : t.common.delivery}
+          </dt>
+          <dd className="text-end">
             {fulfillment === 'pickup' ? (
-              <span className="font-mono text-sm">Free</span>
+              <span className="font-mono text-sm">{t.common.free}</span>
             ) : zone ? (
               <Price amount={zone.fee} className="text-sm" />
             ) : (
-              <span className="text-sm text-muted">Choose your area</span>
+              <span className="text-sm text-muted">{t.shop.checkout.chooseArea}</span>
             )}
           </dd>
         </div>
         <div className="mt-2 flex items-baseline justify-between border-t border-line pt-4">
-          <dt className="font-semibold">Total</dt>
+          <dt className="font-semibold">{t.common.total}</dt>
           <dd>
             <Price amount={totals.total} strong className="text-2xl" />
           </dd>
@@ -61,11 +64,17 @@ export function OrderSummary({ lines, unavailableIds, totals, fulfillment, zone,
 
       {/* Phones and tablets submit from the sticky bar instead (MobileCheckoutBar). */}
       <Button type="submit" size="lg" block loading={submitting} className="mt-6 hidden lg:flex">
-        {submitting ? 'Placing your order' : needsZone ? 'Place order' : `Place order · ${formatMoney(totals.total)}`}
+        {submitting
+          ? t.shop.checkout.placing
+          : needsZone
+            ? t.shop.checkout.placeOrder
+            : fill(t.shop.checkout.placeOrderFor, { price: formatMoney(totals.total) })}
       </Button>
       <p className="mt-3 text-center text-sm text-muted">
-        Nothing is charged online. We call within {restaurant.confirmationCallMinutes} minutes to confirm, then you pay{' '}
-        {fulfillment === 'delivery' ? 'cash on delivery' : 'at the counter'}.
+        {fill(t.shop.checkout.summaryNote, {
+          minutes: plural(t.plurals.minutes, restaurant.confirmationCallMinutes),
+          how: fulfillment === 'delivery' ? t.shop.checkout.payOnDelivery : t.shop.checkout.payAtCounter,
+        })}
       </p>
     </div>
   );

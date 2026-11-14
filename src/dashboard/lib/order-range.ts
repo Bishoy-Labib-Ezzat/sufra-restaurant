@@ -1,12 +1,13 @@
+import { t } from '@/shared/i18n';
 import type { OrderQuery } from '@/shared/types';
 
 export type RangePreset = 'today' | '7d' | '30d' | 'all';
 
 export const RANGE_OPTIONS: { value: RangePreset; label: string }[] = [
-  { value: 'today', label: 'Today' },
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: 'all', label: 'All time' },
+  { value: 'today', label: t.dashboard.orders.ranges.today },
+  { value: '7d', label: t.dashboard.orders.ranges['7d'] },
+  { value: '30d', label: t.dashboard.orders.ranges['30d'] },
+  { value: 'all', label: t.dashboard.orders.ranges.all },
 ];
 
 /** Converts a preset into the `from` bound the API expects. */

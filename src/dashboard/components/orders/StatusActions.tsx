@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { LockSimple, Prohibit } from '@phosphor-icons/react';
+import { fill, t } from '@/shared/i18n';
 import { formatDateTime } from '@/shared/lib/format';
-import { advanceLabel, ALL_STATUSES, canTransition, isTerminal, nextStatus, STATUS_META } from '@/shared/lib/order-status';
+import {
+  advanceLabel,
+  ALL_STATUSES,
+  canTransition,
+  formatOrderCode,
+  isTerminal,
+  nextStatus,
+  STATUS_META,
+} from '@/shared/lib/order-status';
 import { Button } from '@/shared/ui/Button';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { Field, Select, Textarea } from '@/shared/ui/form';
@@ -19,7 +28,7 @@ export function StatusActions({ order }: { order: Order }) {
     return (
       <p className="flex items-center gap-2 rounded-field bg-paper-deep px-4 py-3 text-sm text-ink-soft">
         <LockSimple size={16} weight="bold" aria-hidden />
-        {STATUS_META[order.status].label} {formatDateTime(order.updatedAt)}. Closed orders cannot change.
+        {fill(t.dashboard.orders.closedNote, { status: STATUS_META[order.status].label, time: formatDateTime(order.updatedAt) })}
       </p>
     );
   }
@@ -38,16 +47,16 @@ export function StatusActions({ order }: { order: Order }) {
           </Button>
         )}
         <label className="sr-only" htmlFor={`move-${order.id}`}>
-          Move to another status
+          {t.dashboard.orders.moveLabel}
         </label>
         <Select
           id={`move-${order.id}`}
           value=""
           disabled={busy}
           onChange={(event) => event.target.value && move(event.target.value as OrderStatus)}
-          className="h-11 w-auto rounded-full pr-10 text-base font-semibold sm:text-sm"
+          className="h-11 w-auto rounded-full pe-10 text-base font-semibold sm:text-sm"
         >
-          <option value="">Move to…</option>
+          <option value="">{t.dashboard.orders.moveTo}</option>
           {otherStatuses.map((status) => (
             <option key={status} value={status}>
               {STATUS_META[status].label}
@@ -55,28 +64,28 @@ export function StatusActions({ order }: { order: Order }) {
           ))}
         </Select>
         <Button variant="ghost" icon={Prohibit} disabled={busy} onClick={() => setCancelling(true)} className="text-danger hover:bg-danger-wash">
-          Cancel order
+          {t.dashboard.orders.cancel}
         </Button>
       </div>
 
       <ConfirmDialog
         open={cancelling}
-        title={`Cancel ${order.code}?`}
-        description="The customer sees the order as cancelled. This cannot be undone."
-        confirmLabel="Cancel order"
+        title={fill(t.dashboard.orders.cancelTitle, { code: formatOrderCode(order.code) })}
+        description={t.dashboard.orders.cancelBody}
+        confirmLabel={t.dashboard.orders.cancel}
         tone="danger"
         loading={busy}
         onConfirm={() => move('cancelled', reason)}
         onCancel={() => setCancelling(false)}
       >
-        <Field label="Reason" aside="Optional, staff only">
+        <Field label={t.dashboard.orders.reason} aside={t.dashboard.orders.reasonAside}>
           {({ id }) => (
             <Textarea
               id={id}
               value={reason}
               maxLength={200}
               onChange={(event) => setReason(event.target.value)}
-              placeholder="Customer did not answer the confirmation call."
+              placeholder={t.dashboard.orders.reasonPlaceholder}
               className="min-h-20"
             />
           )}

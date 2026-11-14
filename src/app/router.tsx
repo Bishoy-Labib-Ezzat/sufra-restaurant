@@ -6,6 +6,7 @@ import { MenuPage } from '@/main-shopping/pages/MenuPage';
 import { OrderPage } from '@/main-shopping/pages/OrderPage';
 import { TrackOrderPage } from '@/main-shopping/pages/TrackOrderPage';
 import { ShopLayout } from '@/main-shopping/layout/ShopLayout';
+import { t } from '@/shared/i18n';
 import { lazyNamed } from './lazy';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { RootLayout } from './RootLayout';
@@ -56,7 +57,7 @@ export const router = createBrowserRouter([
               { path: 'menu/new', element: <ProductEditorPage /> },
               { path: 'menu/:productId', element: <ProductEditorPage /> },
               { path: 'categories', element: <CategoriesPage /> },
-              { path: '*', element: <NotFoundPage homeHref="/dashboard" homeLabel="Back to the dashboard" /> },
+              { path: '*', element: <NotFoundPage homeHref="/dashboard" homeLabel={t.pages.notFound.dashboardHome} /> },
             ],
           },
         ],

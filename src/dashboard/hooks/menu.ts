@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getErrorMessage } from '@/shared/api/errors';
 import { queryKeys } from '@/shared/api/query-keys';
+import { fill, t } from '@/shared/i18n';
 import { resizeImage } from '@/shared/lib/image';
 import { categoriesService } from '@/shared/services/categories.service';
 import { productsService } from '@/shared/services/products.service';
@@ -21,7 +22,7 @@ export function useSaveProduct() {
     mutationFn: ({ id, input }: { id?: string; input: ProductInput }) =>
       id ? productsService.update(id, input) : productsService.create(input),
     onSuccess: (product, { id }) => {
-      toast.success(id ? `${product.name} saved` : `${product.name} is on the menu`);
+      toast.success(fill(id ? t.dashboard.menu.productSaved : t.dashboard.menu.productAdded, { name: product.name }));
       invalidate();
     },
   });
@@ -48,7 +49,7 @@ export function usePatchProduct() {
     },
     onSuccess: (product, { changes }) => {
       if ('isAvailable' in changes) {
-        toast.success(product.isAvailable ? `${product.name} is back on sale` : `${product.name} marked sold out`);
+        toast.success(fill(product.isAvailable ? t.dashboard.menu.backOnSale : t.dashboard.menu.markedSoldOut, { name: product.name }));
       }
     },
     onSettled: invalidate,
@@ -60,7 +61,7 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: (product: Product) => productsService.remove(product.id),
     onSuccess: (_result, product) => {
-      toast.success(`${product.name} removed from the menu`);
+      toast.success(fill(t.dashboard.menu.productRemoved, { name: product.name }));
       invalidate();
     },
     onError: (error) => toast.error(getErrorMessage(error)),
@@ -79,7 +80,7 @@ export function useSaveCategory() {
     mutationFn: ({ id, input }: { id?: string; input: CategoryInput }) =>
       id ? categoriesService.update(id, input) : categoriesService.create(input),
     onSuccess: (category, { id }) => {
-      toast.success(id ? `${category.name} saved` : `${category.name} added`);
+      toast.success(fill(id ? t.dashboard.categories.saved : t.dashboard.categories.added, { name: category.name }));
       invalidate();
     },
   });
@@ -90,7 +91,7 @@ export function useDeleteCategory() {
   return useMutation({
     mutationFn: (category: Category) => categoriesService.remove(category.id),
     onSuccess: (_result, category) => {
-      toast.success(`${category.name} deleted`);
+      toast.success(fill(t.dashboard.categories.deleted, { name: category.name }));
       invalidate();
     },
     onError: (error) => toast.error(getErrorMessage(error)),

@@ -47,18 +47,19 @@ export function ColumnChart({ data, caption, formatValue, formatTick, highlightK
   return (
     <figure className="flex flex-col gap-2">
       <div className="relative" style={{ height }}>
-        <div className="absolute inset-y-0 left-0 w-10" aria-hidden>
+        {/* Right to left: the value axis sits on the right, and the days run from right (oldest) to left. */}
+        <div className="absolute inset-y-0 start-0 w-14" aria-hidden>
           {ticks.map((tick) => (
             <span
               key={tick}
-              className="absolute right-2 translate-y-1/2 font-mono text-[11px] text-muted tabular"
+              className="absolute end-2 translate-y-1/2 font-mono text-[11px] whitespace-nowrap text-muted tabular"
               style={{ bottom: `${(tick / top) * 100}%` }}
             >
               {formatTick(tick)}
             </span>
           ))}
         </div>
-        <div className="absolute inset-y-0 right-0 left-10">
+        <div className="absolute inset-y-0 end-0 start-14">
           {ticks.map((tick) => (
             <div key={tick} aria-hidden className="absolute inset-x-0 border-t border-line" style={{ bottom: `${(tick / top) * 100}%` }} />
           ))}
@@ -98,7 +99,7 @@ export function ColumnChart({ data, caption, formatValue, formatTick, highlightK
                   {isActive && (
                     <span
                       role="tooltip"
-                      className="pointer-events-none absolute left-1/2 z-10 flex -translate-x-1/2 flex-col items-start rounded-field bg-ink px-3 py-2 text-left text-xs whitespace-nowrap text-paper shadow-float"
+                      className="pointer-events-none absolute left-1/2 z-10 flex -translate-x-1/2 flex-col items-start rounded-field bg-ink px-3 py-2 text-start text-xs whitespace-nowrap text-paper shadow-float"
                       style={{ bottom: `calc(${Math.min(percent, 72)}% + 10px)` }}
                     >
                       <span className="font-semibold">{datum.longLabel}</span>
@@ -112,7 +113,7 @@ export function ColumnChart({ data, caption, formatValue, formatTick, highlightK
           </div>
         </div>
       </div>
-      <div className="ml-10 grid" aria-hidden style={{ gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))` }}>
+      <div className="ms-14 grid" aria-hidden style={{ gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr))` }}>
         {data.map((datum, index) => (
           <span
             key={datum.key}

@@ -62,14 +62,14 @@ export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
 export function Select({ className, children, ...props }: ComponentProps<'select'>) {
   return (
     <div className="relative">
-      <select className={cn(fieldBase, 'h-12 appearance-none pr-11', className)} {...props}>
+      <select className={cn(fieldBase, 'h-12 appearance-none pe-11', className)} {...props}>
         {children}
       </select>
       <CaretDown
         size={16}
         weight="bold"
         aria-hidden
-        className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-muted"
+        className="pointer-events-none absolute top-1/2 end-4 -translate-y-1/2 text-muted"
       />
     </div>
   );
@@ -115,7 +115,7 @@ export function Switch({ checked, onChange, label, hideLabel, disabled, descript
       aria-label={hideLabel ? label : undefined}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={cn('group inline-flex min-h-11 items-center gap-3 text-left disabled:opacity-50', hideLabel && 'min-w-11 justify-center')}
+      className={cn('group inline-flex min-h-11 items-center gap-3 text-start disabled:opacity-50', hideLabel && 'min-w-11 justify-center')}
     >
       <span
         className={cn(
@@ -125,8 +125,9 @@ export function Switch({ checked, onChange, label, hideLabel, disabled, descript
       >
         <span
           className={cn(
-            'absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-out-expo',
-            checked && 'translate-x-4',
+            'absolute top-0.5 start-0.5 size-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-out-expo',
+            // Right to left: the knob starts on the right and slides left when on.
+            checked && '-translate-x-4',
           )}
         />
       </span>
@@ -159,7 +160,8 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
       onKeyDown={(event) => {
         if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
         const index = options.findIndex((option) => option.value === value);
-        const step = event.key === 'ArrowRight' ? 1 : -1;
+        // Right to left: the next option sits to the left.
+        const step = event.key === 'ArrowLeft' ? 1 : -1;
         const next = options[(index + step + options.length) % options.length];
         onChange(next.value);
         (event.currentTarget.querySelector(`[data-value="${next.value}"]`) as HTMLElement | null)?.focus();

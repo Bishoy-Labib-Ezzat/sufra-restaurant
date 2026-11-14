@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Leaf, MagnifyingGlass, Pepper, Sparkle, Star, X } from '@phosphor-icons/react';
 import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
+import { t } from '@/shared/i18n';
 import { Chip, Segmented } from '@/shared/ui/form';
 import type { ProductTag } from '@/shared/types';
 import type { KindFilter, MenuFilters } from '../../lib/menu';
 
 const TAG_FILTERS: { tag: ProductTag; label: string; icon: typeof Leaf }[] = [
-  { tag: 'signature', label: 'House favourites', icon: Star },
-  { tag: 'vegetarian', label: 'Vegetarian', icon: Leaf },
-  { tag: 'spicy', label: 'Spicy', icon: Pepper },
-  { tag: 'new', label: 'New', icon: Sparkle },
+  { tag: 'signature', label: t.tags.signature, icon: Star },
+  { tag: 'vegetarian', label: t.tags.vegetarian, icon: Leaf },
+  { tag: 'spicy', label: t.tags.spicy, icon: Pepper },
+  { tag: 'new', label: t.tags.new, icon: Sparkle },
 ];
 
 interface MenuToolbarProps {
@@ -39,36 +40,36 @@ export function MenuToolbar({ filters, onChange }: MenuToolbarProps) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Segmented<KindFilter>
-          label="Show"
+          label={t.shop.menu.show}
           value={filters.kind}
           onChange={(kind) => onChange({ kind })}
           options={[
-            { value: 'all', label: 'Everything' },
-            { value: 'food', label: 'Eat' },
-            { value: 'drink', label: 'Drink' },
+            { value: 'all', label: t.kinds.all },
+            { value: 'food', label: t.kinds.food },
+            { value: 'drink', label: t.kinds.drink },
           ]}
         />
         <label className="relative flex-1 sm:max-w-sm">
-          <span className="sr-only">Search the menu</span>
+          <span className="sr-only">{t.shop.menu.search}</span>
           <MagnifyingGlass
             size={18}
             weight="bold"
             aria-hidden
-            className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted"
+            className="pointer-events-none absolute top-1/2 start-4 -translate-y-1/2 text-muted"
           />
           <input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search dishes and drinks"
-            className="h-12 w-full rounded-full bg-surface pr-12 pl-11 text-base ring-1 sm:text-[15px] ring-line-strong ring-inset placeholder:text-muted focus:ring-2 focus:ring-ink focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+            placeholder={t.shop.menu.searchPlaceholder}
+            className="h-12 w-full rounded-full bg-surface pe-12 ps-11 text-base ring-1 sm:text-[15px] ring-line-strong ring-inset placeholder:text-muted focus:ring-2 focus:ring-ink focus:outline-none [&::-webkit-search-cancel-button]:hidden"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
-              aria-label="Clear search"
-              className="absolute top-1/2 right-1.5 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
+              aria-label={t.shop.menu.clearSearch}
+              className="absolute top-1/2 end-1.5 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
             >
               <X size={14} weight="bold" />
             </button>

@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import type { ApiErrorBody } from '@/shared/types';
 import { apiConfig } from './config';
 import { ApiError } from './errors';
@@ -63,7 +64,7 @@ async function request<T>(method: string, path: string, { query, body, signal }:
     // A cancellation requested by the caller (e.g. React Query) must surface as-is.
     if (signal?.aborted) throw error;
     if (controller.signal.reason === 'timeout') {
-      throw ApiError.network('The server took too long to respond. Please try again.');
+      throw ApiError.network(t.errors.timeout);
     }
     throw ApiError.network();
   } finally {
@@ -78,7 +79,7 @@ async function request<T>(method: string, path: string, { query, body, signal }:
     if (response.status === 401 && token) hooks.onUnauthorized();
     const errorBody = (payload as ApiErrorBody | null) ?? {
       code: 'http_error',
-      message: `Request failed with status ${response.status}.`,
+      message: t.errors.generic,
     };
     throw new ApiError(response.status, errorBody);
   }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { formatAmount, formatMoney, formatTime } from '@/shared/lib/format';
+import { fill, formatNumber, t } from '@/shared/i18n';
+import { formatMoney, formatPercent, formatTime } from '@/shared/lib/format';
 import type { DashboardOverview } from '@/shared/types';
 
 function Line({ label, children }: { label: string; children: ReactNode }) {
@@ -13,13 +14,10 @@ function Line({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function Change({ today, yesterday }: { today: number; yesterday: number }) {
-  if (!yesterday) return <span className="text-muted">No sales yesterday to compare with.</span>;
+  if (!yesterday) return <span className="text-muted">{t.dashboard.overview.noYesterday}</span>;
   const share = Math.round((today / yesterday) * 100);
   return (
-    <span>
-      Today has reached <span className="font-mono font-semibold">{share}%</span> of yesterday&rsquo;s full-day revenue
-      ({formatMoney(yesterday)}).
-    </span>
+    <span>{fill(t.dashboard.overview.reached, { share: formatPercent(share), amount: formatMoney(yesterday) })}</span>
   );
 }
 
@@ -33,22 +31,16 @@ export function TodayTally({ overview }: { overview: DashboardOverview }) {
     <section aria-labelledby="tally-title" className="ticket bg-surface px-6 py-7 shadow-lift">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 id="tally-title" className="display text-3xl">
-          Today so far
+          {t.dashboard.overview.tallyTitle}
         </h2>
-        <span className="font-mono text-xs text-muted">as of {formatTime(overview.generatedAt)}</span>
+        <span className="font-mono text-xs text-muted">{fill(t.dashboard.overview.asOf, { time: formatTime(overview.generatedAt) })}</span>
       </div>
 
       <dl className="mt-5 flex flex-col gap-3 text-[15px]">
-        <Line label="Revenue">
-          <span className="text-xs font-medium text-muted">EGP </span>
-          {formatAmount(today.revenue)}
-        </Line>
-        <Line label="Orders">{today.orders}</Line>
-        <Line label="Average order">
-          <span className="text-xs font-medium text-muted">EGP </span>
-          {formatAmount(today.averageOrder)}
-        </Line>
-        <Line label="Open right now">{overview.openOrders}</Line>
+        <Line label={t.dashboard.overview.revenue}>{formatMoney(today.revenue)}</Line>
+        <Line label={t.dashboard.overview.orders}>{formatNumber(today.orders)}</Line>
+        <Line label={t.dashboard.overview.averageOrder}>{formatMoney(today.averageOrder)}</Line>
+        <Line label={t.dashboard.overview.openNow}>{formatNumber(overview.openOrders)}</Line>
       </dl>
 
       <p className="mt-5 border-t border-dashed border-line-strong pt-4 text-sm">
@@ -56,26 +48,26 @@ export function TodayTally({ overview }: { overview: DashboardOverview }) {
       </p>
 
       <div className="mt-4 border-t border-dashed border-line-strong pt-4">
-        <p className="text-sm font-semibold">How orders left the kitchen this week</p>
+        <p className="text-sm font-semibold">{t.dashboard.overview.splitTitle}</p>
         {totalWeek ? (
           <>
             <div className="mt-3 flex h-2.5 gap-[2px]" aria-hidden>
-              <span className="rounded-l-[4px] bg-ink" style={{ width: `${deliveryShare}%` }} />
-              <span className="rounded-r-[4px] bg-tomato" style={{ width: `${100 - deliveryShare}%` }} />
+              <span className="rounded-s-[4px] bg-ink" style={{ width: `${deliveryShare}%` }} />
+              <span className="rounded-e-[4px] bg-tomato" style={{ width: `${100 - deliveryShare}%` }} />
             </div>
             <ul className="mt-2 flex justify-between text-sm">
               <li className="flex items-center gap-2">
                 <span className="size-2.5 rounded-sm bg-ink" aria-hidden />
-                Delivery <span className="font-mono font-semibold">{deliveryShare}%</span>
+                {t.common.delivery} <span className="font-mono font-semibold">{formatPercent(deliveryShare)}</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="size-2.5 rounded-sm bg-tomato" aria-hidden />
-                Pickup <span className="font-mono font-semibold">{100 - deliveryShare}%</span>
+                {t.common.pickup} <span className="font-mono font-semibold">{formatPercent(100 - deliveryShare)}</span>
               </li>
             </ul>
           </>
         ) : (
-          <p className="mt-2 text-sm text-muted">No orders this week yet.</p>
+          <p className="mt-2 text-sm text-muted">{t.dashboard.overview.noWeek}</p>
         )}
       </div>
     </section>

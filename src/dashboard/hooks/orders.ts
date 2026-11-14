@@ -1,7 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getErrorMessage } from '@/shared/api/errors';
 import { queryKeys } from '@/shared/api/query-keys';
-import { STATUS_META } from '@/shared/lib/order-status';
+import { fill, t } from '@/shared/i18n';
+import { formatOrderCode, STATUS_META } from '@/shared/lib/order-status';
 import { ordersService } from '@/shared/services/orders.service';
 import { toast } from '@/shared/ui/toast-store';
 import type { Order, OrderQuery, OrderStatus, Paginated } from '@/shared/types';
@@ -62,7 +63,7 @@ export function useUpdateOrderStatus() {
     },
     onSuccess: (updated) => {
       queryClient.setQueryData(queryKeys.orders.detail(updated.id), updated);
-      toast.success(`${updated.code} is now ${STATUS_META[updated.status].label.toLowerCase()}`);
+      toast.success(fill(t.dashboard.orders.statusChanged, { code: formatOrderCode(updated.code), status: STATUS_META[updated.status].label }));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all });

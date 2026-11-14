@@ -1,7 +1,9 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/bricolage-grotesque/standard.css';
-@import '@fontsource-variable/geist';
-@import '@fontsource-variable/geist-mono';
+/* Lalezar: the poster face of Arab shop signs and menu boards, for headings.
+   Alexandria: a geometric Arabic sans by an Egyptian designer, for text and numbers. */
+@import '@fontsource/lalezar/arabic-400.css';
+@import '@fontsource/lalezar/latin-400.css';
+@import '@fontsource-variable/alexandria';
 
 /*
  * Sufra design tokens.
@@ -11,9 +13,18 @@
  * panels and photos use --radius-panel, small thumbnails use --radius-thumb.
  */
 @theme {
-  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Lalezar', 'Alexandria Variable', system-ui, sans-serif;
+  --font-sans: 'Alexandria Variable', system-ui, sans-serif;
+  /* Numbers, codes and prices use the text face too: it carries the Arabic-Indic digits. */
+  --font-mono: 'Alexandria Variable', system-ui, sans-serif;
+
+  /* Letter-spacing breaks the joins between Arabic letters, so every tracking step is zero. */
+  --tracking-tighter: 0em;
+  --tracking-tight: 0em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0em;
+  --tracking-wider: 0em;
+  --tracking-widest: 0em;
 
   --color-paper: #f1f2ec;
   --color-paper-deep: #e5e8de;
@@ -101,6 +112,8 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /* Lalezar has a single heavy weight: never let the browser fake a bolder one. */
+    font-synthesis-weight: none;
   }
   /* No double-tap-to-zoom delay on controls; pinch zoom stays available. */
   a,
@@ -144,13 +157,21 @@
   }
 }
 
-/* Condensed display cut of Bricolage: the menu-board voice of the brand. */
+/* Lalezar: the menu-board voice of the brand. Arabic needs room above and below for its dots and tails. */
 @utility display {
   font-family: var(--font-display);
-  font-stretch: 78%;
-  font-weight: 760;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+/*
+ * Phone numbers and other digit groups that must read left to right. Arabic-Indic digit groups
+ * separated by spaces are otherwise laid out right to left, even inside dir="ltr".
+ */
+@utility digits-ltr {
+  direction: ltr;
+  unicode-bidi: isolate-override;
 }
 
 @utility tabular {

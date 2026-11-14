@@ -16,11 +16,19 @@ export interface MenuSection {
 /** DOM id of a menu section, shared by the jump-bar and the sections. */
 export const sectionId = (slug: string) => `section-${slug}`;
 
+/**
+ * Search-friendly form of a text: no case, accents or Arabic short vowels, and the letter shapes
+ * people mix up when typing (أ إ آ ا, ى ي, ة ه) folded together.
+ */
 const normalize = (value: string) =>
   value
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
     .trim();
 
 /** Groups the catalog into category sections, applying the shopper's filters. Sold-out items sink to the end. */

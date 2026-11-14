@@ -88,7 +88,16 @@ Auth expects `POST /auth/login` to return `{ token, expiresAt, user }`. The clie
 
 ## Design notes
 
-- One visual system across both sides: sage paper, forest-black ink, tomato as the single accent. Bricolage Grotesque (condensed) for display, Geist for text, Geist Mono for numbers and order codes.
+- One visual system across both sides: sage paper, forest-black ink, tomato as the single accent. Lalezar for display (the poster face of Arab shop signs and menu boards), Alexandria for text and numbers.
 - The order **ticket** is the shared motif: customers get a perforated receipt, and staff move the same ticket across the board.
-- Light theme only, English only, as specified.
+- Light theme only.
+
+## Language
+
+The whole system is Arabic only and laid out right to left (`<html lang="ar" dir="rtl">`).
+
+- **Every message lives in [`src/shared/i18n/ar.json`](src/shared/i18n/ar.json)**: UI text, validation errors, notifications, order statuses and the mock server's errors. Edit the wording there; placeholders in braces such as `{name}` are filled in by the code. Plurals use Arabic's six forms (`zero`, `one`, `two`, `few`, `many`, `other`).
+- Numbers, prices, times and dates are shown with Arabic-Indic digits (`١٢٣`) through the `ar-EG` formatters in `src/shared/lib/format.ts`. Order numbers are stored as `SF-1042` and shown as `١٠٤٢`.
+- Inputs accept both digit styles: phone numbers, order numbers, prices and the dashboard search all convert `١٢٣` to `123` before parsing.
+- Layout uses logical Tailwind classes (`ms-*`, `pe-*`, `start-*`, `text-start`). Phone numbers use the `digits-ltr` utility so their digit groups keep left-to-right order.
 - Food photos are real photography from Unsplash.

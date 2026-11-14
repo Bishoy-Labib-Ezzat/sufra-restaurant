@@ -1,19 +1,25 @@
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { Moped, Storefront } from '@phosphor-icons/react';
 import { restaurant } from '@/shared/config/restaurant';
+import { fill, plural, t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 import type { FulfillmentType } from '@/shared/types';
 
 const OPTIONS: { value: FulfillmentType; title: string; detail: string; icon: typeof Moped }[] = [
-  { value: 'delivery', title: 'Delivery', detail: 'To your door, fee by area', icon: Moped },
-  { value: 'pickup', title: 'Pickup', detail: `Ready in about ${restaurant.pickupEtaMinutes} min, no fee`, icon: Storefront },
+  { value: 'delivery', title: t.shop.checkout.deliveryOption, detail: t.shop.checkout.deliveryDetail, icon: Moped },
+  {
+    value: 'pickup',
+    title: t.shop.checkout.pickupOption,
+    detail: fill(t.shop.checkout.pickupDetail, { minutes: plural(t.plurals.minutes, restaurant.pickupEtaMinutes) }),
+    icon: Storefront,
+  },
 ];
 
 /** Two side-by-side choices at every width; on phones each one stacks icon over text. */
 export function FulfillmentPicker({ value, registration }: { value: FulfillmentType; registration: UseFormRegisterReturn }) {
   return (
     <fieldset className="grid grid-cols-2 gap-2.5 sm:gap-3">
-      <legend className="sr-only">How should we get it to you?</legend>
+      <legend className="sr-only">{t.shop.checkout.howTitle}</legend>
       {OPTIONS.map(({ value: option, title, detail, icon: Icon }) => {
         const active = value === option;
         return (
@@ -35,7 +41,7 @@ export function FulfillmentPicker({ value, registration }: { value: FulfillmentT
               <Icon size={22} weight="bold" aria-hidden />
             </span>
             <span className="flex min-w-0 flex-col">
-              <span className="font-display text-lg font-bold sm:text-xl">{title}</span>
+              <span className="font-display text-xl sm:text-2xl">{title}</span>
               <span className={cn('text-[13px] leading-snug sm:text-sm', active ? 'text-paper/75' : 'text-muted')}>{detail}</span>
             </span>
           </label>

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { t } from '@/shared/i18n';
 import { Button } from './Button';
 import { Overlay } from './Overlay';
 
@@ -21,7 +22,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = 'Keep it',
+  cancelLabel = t.common.keepIt,
   tone = 'default',
   loading,
   onConfirm,

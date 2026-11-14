@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
-import { ArrowRight } from '@phosphor-icons/react';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { useAuth } from '@/shared/auth/auth-context';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 import { useNow } from '@/shared/hooks/useNow';
-import { firstName, formatFullDate, formatMoney, formatWeekday, isSameDay, pluralize } from '@/shared/lib/format';
+import { fill, plural, t } from '@/shared/i18n';
+import { firstName, formatCompact, formatFullDate, formatHour, formatMoney, formatWeekday, isSameDay } from '@/shared/lib/format';
 import { OPEN_STATUSES } from '@/shared/lib/order-status';
 import { buttonStyles } from '@/shared/ui/button-styles';
 import { ErrorState, Skeleton } from '@/shared/ui/states';
@@ -18,18 +19,14 @@ import { useOverview } from '../hooks/stats';
 
 const SERVICE_HOURS = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0];
 
+/** Arabic greets with "good morning" until noon and "good evening" after. */
 function greeting(date: Date) {
   const hour = date.getHours();
-  if (hour >= 5 && hour < 12) return 'Good morning';
-  if (hour >= 12 && hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  return hour >= 5 && hour < 12 ? t.dashboard.overview.morning : t.dashboard.overview.evening;
 }
 
-const compact = (value: number) => (value >= 1000 ? `${Math.round(value / 100) / 10}K` : String(value));
-const hourLabel = (hour: number) => (hour === 0 ? '12a' : hour === 12 ? '12p' : hour > 12 ? `${hour - 12}p` : `${hour}a`);
-
 export function OverviewPage() {
-  useDocumentTitle('Overview');
+  useDocumentTitle(t.dashboard.overview.title);
   const { user } = useAuth();
   const now = useNow(30_000);
   const overview = useOverview();
@@ -39,12 +36,12 @@ export function OverviewPage() {
   return (
     <>
       <PageHeader
-        title={`${greeting(today)}, ${firstName(user?.name ?? '')}`}
+        title={fill(t.dashboard.overview.greeting, { greeting: greeting(today), name: firstName(user?.name ?? '') })}
         description={formatFullDate(today)}
         actions={
           <Link to="/dashboard/orders" className={buttonStyles({ variant: 'ink' })}>
-            Open the board
-            <ArrowRight size={16} weight="bold" aria-hidden />
+            {t.dashboard.overview.openBoard}
+            <ArrowLeft size={16} weight="bold" aria-hidden />
           </Link>
         }
       />
@@ -73,50 +70,52 @@ export function OverviewPage() {
           <>
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
               <Panel
-                title="Revenue, last 7 days"
-                aside={`${formatMoney(overview.data.revenueByDay.reduce((sum, day) => sum + day.revenue, 0))} in total`}
+                title={t.dashboard.overview.revenueTitle}
+                aside={fill(t.dashboard.overview.revenueTotal, {
+                  amount: formatMoney(overview.data.revenueByDay.reduce((sum, day) => sum + day.revenue, 0)),
+                })}
               >
                 <ColumnChart
-                  caption="Revenue per day for the last 7 days, in Egyptian pounds"
+                  caption={t.dashboard.overview.revenueCaption}
                   highlightKey={overview.data.revenueByDay.at(-1)?.date}
                   formatValue={formatMoney}
-                  formatTick={compact}
+                  formatTick={formatCompact}
                   data={overview.data.revenueByDay.map((day) => {
                     const date = new Date(`${day.date}T12:00:00`);
                     const isToday = isSameDay(date, today);
                     return {
                       key: day.date,
-                      label: isToday ? 'Today' : formatWeekday(date.toISOString()),
-                      longLabel: isToday ? 'Today' : formatFullDate(date),
+                      label: isToday ? t.time.today : formatWeekday(date.toISOString()),
+                      longLabel: isToday ? t.time.today : formatFullDate(date),
                       value: day.revenue,
-                      detail: pluralize(day.orders, 'order'),
+                      detail: plural(t.plurals.orders, day.orders),
                     };
                   })}
                 />
               </Panel>
-              <Panel title="Best sellers" aside="Last 7 days">
+              <Panel title={t.dashboard.overview.bestSellers} aside={t.dashboard.overview.last7}>
                 <BestSellers items={overview.data.topProducts} />
               </Panel>
             </div>
 
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-              <Panel title="Orders by hour" aside="Today">
+              <Panel title={t.dashboard.overview.byHour} aside={t.time.today}>
                 <ColumnChart
-                  caption="Orders placed today, per hour of service"
+                  caption={t.dashboard.overview.byHourCaption}
                   integer
                   height={160}
                   highlightKey={String(today.getHours())}
-                  formatValue={(value) => pluralize(value, 'order')}
-                  formatTick={String}
+                  formatValue={(value) => plural(t.plurals.orders, value)}
+                  formatTick={formatCompact}
                   data={SERVICE_HOURS.map((hour) => ({
                     key: String(hour),
-                    label: hourLabel(hour),
-                    longLabel: `${hourLabel(hour).replace('a', ' AM').replace('p', ' PM')} to ${hourLabel((hour + 1) % 24).replace('a', ' AM').replace('p', ' PM')}`,
+                    label: formatHour(hour),
+                    longLabel: fill(t.time.hourRange, { from: formatHour(hour), to: formatHour(hour + 1) }),
                     value: overview.data.ordersByHour.find((entry) => entry.hour === hour)?.orders ?? 0,
                   }))}
                 />
               </Panel>
-              <Panel title="Today by status">
+              <Panel title={t.dashboard.overview.byStatus}>
                 <StatusMix breakdown={overview.data.statusBreakdown} />
               </Panel>
             </div>

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle, Info, WarningOctagon, X } from '@phosphor-icons/react';
+import { t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 import { useToastStore, type Toast } from './toast-store';
 
@@ -22,7 +23,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.15 } }}
       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-      className="pointer-events-auto flex w-full items-center gap-3 rounded-full bg-ink py-2 pr-2 pl-4 text-sm text-paper shadow-float sm:w-auto sm:max-w-md"
+      className="pointer-events-auto flex w-full items-center gap-3 rounded-full bg-ink py-2 pe-2 ps-4 text-sm text-paper shadow-float sm:w-auto sm:max-w-md"
     >
       <Icon
         size={20}
@@ -50,7 +51,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       )}
       <button
         type="button"
-        aria-label="Dismiss"
+        aria-label={t.common.dismiss}
         onClick={() => dismiss(toast.id)}
         className="grid size-8 shrink-0 pointer-coarse:size-10 place-items-center rounded-full text-paper/70 transition hover:bg-paper/10 hover:text-paper"
       >
@@ -65,7 +66,7 @@ export function Toaster() {
   return (
     <ol
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:top-auto sm:right-6 sm:bottom-6 sm:items-end"
+      className="pointer-events-none fixed inset-x-3 top-[max(0.75rem,env(safe-area-inset-top))] z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:top-auto sm:end-6 sm:bottom-6 sm:items-end"
     >
       <AnimatePresence initial={false}>
         {toasts.map((toast) => (

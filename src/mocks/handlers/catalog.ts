@@ -9,6 +9,7 @@ import type {
   ProductTag,
   ReorderCategoriesRequest,
 } from '@/shared/types';
+import { fill, plural, t } from '@/shared/i18n';
 import { db, type DbData } from '../db';
 import { api, fail, param, readJson, requireUser, route, slugify } from '../utils';
 
@@ -27,12 +28,12 @@ function withCounts(data: Readonly<DbData>): Category[] {
 function validateCategory(body: Partial<CategoryInput>, data: Readonly<DbData>, currentId?: string) {
   const errors: Record<string, string> = {};
   const name = body.name?.trim() ?? '';
-  if (name.length < 2) errors.name = 'Use at least 2 characters.';
+  if (name.length < 2) errors.name = t.validation.min2;
   else if (data.categories.some((item) => item.id !== currentId && item.name.toLowerCase() === name.toLowerCase())) {
-    errors.name = 'A category with this name already exists.';
+    errors.name = t.server.categoryExists;
   }
-  if (body.kind !== 'food' && body.kind !== 'drink') errors.kind = 'Choose food or drink.';
-  if (Object.keys(errors).length) throw fail(422, 'validation_error', 'Check the highlighted fields.', errors);
+  if (body.kind !== 'food' && body.kind !== 'drink') errors.kind = t.server.chooseKind;
+  if (Object.keys(errors).length) throw fail(422, 'validation_error', t.server.checkFields, errors);
   return { name, kind: body.kind as MenuKind, description: body.description?.trim() ?? '' };
 }
 
@@ -43,33 +44,33 @@ function validateProduct(body: Partial<ProductInput>, data: Readonly<DbData>, pa
 
   if (has('name')) {
     const name = body.name?.trim() ?? '';
-    if (name.length < 2 || name.length > 60) errors.name = 'Use 2 to 60 characters.';
+    if (name.length < 2 || name.length > 60) errors.name = t.server.nameLength;
     result.name = name;
   }
   if (has('description')) {
     const description = body.description?.trim() ?? '';
-    if (description.length > 240) errors.description = 'Keep it under 240 characters.';
+    if (description.length > 240) errors.description = t.validation.max240;
     result.description = description;
   }
   if (has('price')) {
     if (typeof body.price !== 'number' || !Number.isInteger(body.price) || body.price < 1 || body.price > 10_000) {
-      errors.price = 'Enter a whole price between 1 and 10,000.';
+      errors.price = t.server.priceRange;
     }
     result.price = body.price;
   }
   if (has('categoryId')) {
-    if (!data.categories.some((category) => category.id === body.categoryId)) errors.categoryId = 'Choose a category.';
+    if (!data.categories.some((category) => category.id === body.categoryId)) errors.categoryId = t.validation.categoryRequired;
     result.categoryId = body.categoryId;
   }
   if (has('imageUrl')) {
-    if (!body.imageUrl) errors.imageUrl = 'Add a photo.';
+    if (!body.imageUrl) errors.imageUrl = t.server.addPhoto;
     result.imageUrl = body.imageUrl;
   }
   if (has('tags')) result.tags = (body.tags ?? []).filter((tag): tag is ProductTag => TAGS.includes(tag));
   if (has('isAvailable')) result.isAvailable = Boolean(body.isAvailable);
   if (has('isFeatured')) result.isFeatured = Boolean(body.isFeatured);
 
-  if (Object.keys(errors).length) throw fail(422, 'validation_error', 'Check the highlighted fields.', errors);
+  if (Object.keys(errors).length) throw fail(422, 'validation_error', t.server.checkFields, errors);
   return result;
 }
 
@@ -117,7 +118,7 @@ export const catalogHandlers = [
       const body = await readJson<CategoryInput>(request);
       const category = db.write((data) => {
         const existing = data.categories.find((item) => item.id === id);
-        if (!existing) throw fail(404, 'not_found', 'This category no longer exists.');
+        if (!existing) throw fail(404, 'not_found', t.server.categoryMissing);
         Object.assign(existing, validateCategory(body, data, id), { slug: slugify(body.name ?? existing.name) });
         return withCounts(data).find((item) => item.id === id);
       });
@@ -132,10 +133,10 @@ export const catalogHandlers = [
       const id = param(params, 'id');
       db.write((data) => {
         const category = data.categories.find((item) => item.id === id);
-        if (!category) throw fail(404, 'not_found', 'This category no longer exists.');
+        if (!category) throw fail(404, 'not_found', t.server.categoryMissing);
         const count = data.products.filter((product) => product.categoryId === id).length;
         if (count > 0) {
-          throw fail(409, 'category_not_empty', `Move or delete the ${count} items in "${category.name}" first.`);
+          throw fail(409, 'category_not_empty', fill(t.server.categoryNotEmpty, { items: plural(t.plurals.items, count), name: category.name }));
         }
         data.categories = data.categories.filter((item) => item.id !== id);
       });
@@ -150,7 +151,7 @@ export const catalogHandlers = [
       const { ids = [] } = await readJson<ReorderCategoriesRequest>(request);
       const categories = db.write((data) => {
         if (ids.length !== data.categories.length || !data.categories.every((item) => ids.includes(item.id))) {
-          throw fail(422, 'validation_error', 'The new order must list every category once.');
+          throw fail(422, 'validation_error', t.server.reorderInvalid);
         }
         data.categories.forEach((item) => {
           item.sortOrder = ids.indexOf(item.id) + 1;
@@ -186,7 +187,7 @@ export const catalogHandlers = [
     api(endpoints.products.detail(':id')),
     route(({ params }) => {
       const product = db.read((data) => data.products.find((item) => item.id === param(params, 'id')));
-      return product ? HttpResponse.json(product) : fail(404, 'not_found', 'This item is no longer on the menu.');
+      return product ? HttpResponse.json(product) : fail(404, 'not_found', t.server.productMissing);
     }),
   ),
 
@@ -218,7 +219,7 @@ export const catalogHandlers = [
         const body = await readJson<ProductInput>(request);
         const product = db.write((data) => {
           const existing = data.products.find((item) => item.id === param(params, 'id'));
-          if (!existing) throw fail(404, 'not_found', 'This item is no longer on the menu.');
+          if (!existing) throw fail(404, 'not_found', t.server.productMissing);
           Object.assign(existing, validateProduct(body, data, method === 'patch'), {
             updatedAt: new Date().toISOString(),
           });
@@ -236,7 +237,7 @@ export const catalogHandlers = [
       db.write((data) => {
         const before = data.products.length;
         data.products = data.products.filter((item) => item.id !== param(params, 'id'));
-        if (data.products.length === before) throw fail(404, 'not_found', 'This item is no longer on the menu.');
+        if (data.products.length === before) throw fail(404, 'not_found', t.server.productMissing);
       });
       return new HttpResponse(null, { status: 204 });
     }),
@@ -248,9 +249,9 @@ export const catalogHandlers = [
       requireUser(request, ['admin']);
       const file = (await request.formData()).get('file');
       if (!(file instanceof File) || !file.type.startsWith('image/')) {
-        return fail(422, 'invalid_file', 'Upload a JPG, PNG or WebP image.');
+        return fail(422, 'invalid_file', t.server.invalidImage);
       }
-      if (file.size > MAX_UPLOAD_BYTES) return fail(413, 'file_too_large', 'Images must be under 5 MB.');
+      if (file.size > MAX_UPLOAD_BYTES) return fail(413, 'file_too_large', t.server.imageTooLarge);
       // Without a file server, the "uploaded" URL is the image itself as a data URL.
       return HttpResponse.json({ url: await fileToDataUrl(file) }, { status: 201 });
     }),

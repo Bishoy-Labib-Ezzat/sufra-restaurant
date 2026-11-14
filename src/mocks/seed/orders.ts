@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { calculateTotals } from '@/shared/lib/pricing';
 import { ORDER_FLOW } from '@/shared/lib/order-status';
 import type {
@@ -20,7 +21,7 @@ import { seedCategories } from './catalog';
 
 const DRINK_CATEGORIES = new Set(seedCategories.filter((category) => category.kind === 'drink').map((category) => category.id));
 
-const STAFF = ['Karim Adel', 'Nour Hassan'];
+const STAFF = ['كريم عادل', 'نور حسن'];
 const MINUTE = 60_000;
 
 /** Small deterministic PRNG so every fresh seed tells the same story. */
@@ -85,7 +86,7 @@ function buildHistory(random: Random, draft: Draft, fulfillment: FulfillmentType
       status: 'cancelled',
       at: new Date(reviewedAt + between(random, 4, 12) * MINUTE).toISOString(),
       by: staff,
-      note: random() < 0.6 ? 'Customer did not answer the confirmation call.' : 'Customer asked to cancel.',
+      note: random() < 0.6 ? t.server.cancelNoAnswer : t.server.cancelAsked,
     });
     return history;
   }

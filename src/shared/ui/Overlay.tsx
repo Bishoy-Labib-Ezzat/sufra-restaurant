@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { X } from '@phosphor-icons/react';
+import { t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 import { IconButton } from './Button';
 
@@ -17,12 +18,13 @@ function useScrollLock(active: boolean) {
     const root = document.documentElement;
     const scrollbar = window.innerWidth - root.clientWidth;
     root.style.overflow = 'hidden';
-    root.style.paddingRight = `${scrollbar}px`;
+    // The page scrollbar sits on the inline-end side (the left in Arabic).
+    root.style.paddingInlineEnd = `${scrollbar}px`;
     return () => {
       openOverlays -= 1;
       if (openOverlays === 0) {
         root.style.overflow = '';
-        root.style.paddingRight = '';
+        root.style.paddingInlineEnd = '';
       }
     };
   }, [active]);
@@ -59,7 +61,8 @@ function useFocusTrap(panel: React.RefObject<HTMLElement | null>, active: boolea
   }, [panel, active]);
 }
 
-type Placement = 'center' | 'right';
+/** `side`: a full-height drawer on the inline-end edge (the left in Arabic). */
+type Placement = 'center' | 'side';
 
 interface OverlayProps {
   open: boolean;
@@ -90,10 +93,10 @@ function Panel({ onClose, label, placement = 'center', className, children }: Om
     return () => node?.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-  const right = placement === 'right';
+  const side = placement === 'side';
   return (
     <div
-      className={cn('fixed inset-0 z-50 flex', right ? 'justify-end' : 'items-end justify-center sm:items-center sm:p-6')}
+      className={cn('fixed inset-0 z-50 flex', side ? 'justify-end' : 'items-end justify-center sm:items-center sm:p-6')}
     >
       <motion.div
         className="absolute inset-0 bg-ink/45 backdrop-blur-[2px]"
@@ -112,12 +115,12 @@ function Panel({ onClose, label, placement = 'center', className, children }: Om
         tabIndex={-1}
         className={cn(
           'relative flex max-h-[94dvh] w-full flex-col overflow-hidden bg-surface pb-[env(safe-area-inset-bottom)] shadow-float focus:outline-none',
-          right ? 'h-dvh max-h-dvh sm:max-w-md' : 'rounded-t-panel sm:max-w-lg sm:rounded-panel',
+          side ? 'h-dvh max-h-dvh sm:max-w-md' : 'rounded-t-panel sm:max-w-lg sm:rounded-panel',
           className,
         )}
-        initial={right ? { x: '100%' } : { y: 48, opacity: 0 }}
-        animate={right ? { x: 0 } : { y: 0, opacity: 1 }}
-        exit={right ? { x: '100%' } : { y: 32, opacity: 0 }}
+        initial={side ? { x: '-100%' } : { y: 48, opacity: 0 }}
+        animate={side ? { x: 0 } : { y: 0, opacity: 1 }}
+        exit={side ? { x: '-100%' } : { y: 32, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 380, damping: 38 }}
       >
         {children}
@@ -133,7 +136,7 @@ export function Overlay({ open, onExited, ...props }: OverlayProps) {
   );
 }
 
-/** Header row for overlays: title on the left, close button on the right. */
+/** Header row for overlays: title at the start, close button at the end. */
 export function OverlayHeader({ title, subtitle, onClose }: { title: ReactNode; subtitle?: ReactNode; onClose: () => void }) {
   return (
     <div className="flex items-start justify-between gap-4 border-b border-line px-6 pt-5 pb-4">
@@ -141,7 +144,7 @@ export function OverlayHeader({ title, subtitle, onClose }: { title: ReactNode; 
         <h2 className="display text-3xl">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
       </div>
-      <IconButton icon={X} label="Close" onClick={onClose} className="-mr-2" />
+      <IconButton icon={X} label={t.common.close} onClick={onClose} className="-me-2" />
     </div>
   );
 }

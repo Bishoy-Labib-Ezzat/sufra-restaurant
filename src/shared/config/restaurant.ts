@@ -1,10 +1,13 @@
-/** Static restaurant details shown across the site. */
+import { fill, t, toArabicDigits } from '@/shared/i18n';
+import { formatHour } from '@/shared/lib/format';
+
+/** Static restaurant details shown across the site. Wording lives in i18n/ar.json. */
 export const restaurant = {
-  name: 'Sufra',
-  legalName: 'Sufra Kitchen',
+  name: t.brand.name,
+  legalName: t.brand.legalName,
   phone: '0227350418',
-  phoneDisplay: '02 2735 0418',
-  address: '17 Brazil Street, Zamalek, Cairo',
+  phoneDisplay: toArabicDigits('02 2735 0418'),
+  address: t.restaurant.address,
   mapsUrl: 'https://maps.google.com/?q=Brazil+Street+Zamalek+Cairo',
   /** Kitchen hours in 24h local time. Closing after midnight is expressed as > 24. */
   opensAt: 12,
@@ -19,4 +22,8 @@ export function isOpenNow(date = new Date()) {
   return shifted >= restaurant.opensAt && shifted < restaurant.closesAt;
 }
 
-export const hoursLabel = '12:00 PM to 1:00 AM';
+export const opensAtLabel = formatHour(restaurant.opensAt);
+export const closesAtLabel = formatHour(restaurant.closesAt);
+
+/** "من ١٢ م حتى ١ ص" */
+export const hoursLabel = fill(t.restaurant.hours, { opens: opensAtLabel, closes: closesAtLabel });

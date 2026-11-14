@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { ShoppingBag } from '@phosphor-icons/react';
 import { useLocation } from 'react-router';
-import { pluralize } from '@/shared/lib/format';
+import { fill, plural, t } from '@/shared/i18n';
 import { Price } from '@/shared/ui/Price';
-import { useCartCount, useCartSubtotal } from '../store/cart.store';
+import { useCartCount, useCartSubtotal } from '../hooks/useCart';
 import { useShopUi } from '../store/shop-ui.store';
 
 const HIDDEN_ON = ['/checkout', '/order/'];
@@ -29,13 +29,13 @@ export function MobileCartBar() {
           <button
             type="button"
             onClick={() => setCartOpen(true)}
-            className="flex h-14 w-full items-center gap-3 rounded-full bg-ink pr-5 pl-2 text-paper shadow-float active:scale-[0.98]"
+            className="flex h-14 w-full items-center gap-3 rounded-full bg-ink pe-5 ps-2 text-paper shadow-float active:scale-[0.98]"
           >
             <span className="relative grid size-10 place-items-center rounded-full bg-tomato">
               <ShoppingBag size={20} weight="bold" aria-hidden />
             </span>
-            <span className="flex-1 text-left text-[15px] font-semibold">View order ({pluralize(count, 'item')})</span>
-            <Price amount={subtotal} className="text-paper [&>span:first-child]:text-paper/60" />
+            <span className="flex-1 text-start text-[15px] font-semibold">{fill(t.shop.cart.viewBar, { items: plural(t.plurals.items, count) })}</span>
+            <Price amount={subtotal} className="text-paper [&>span:last-child]:text-paper/60" />
           </button>
         </motion.div>
       )}

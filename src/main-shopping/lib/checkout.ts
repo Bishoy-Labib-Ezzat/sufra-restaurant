@@ -1,29 +1,32 @@
 import { z } from 'zod';
-import { normalizeEgyptianMobile } from '@/shared/lib/phone';
+import { ltr, t } from '@/shared/i18n';
+import { formatPhone, normalizeEgyptianMobile } from '@/shared/lib/phone';
 import type { CreateOrderRequest } from '@/shared/types';
-import type { CartLine } from '../store/cart.store';
+import type { CartItem } from '../store/cart.store';
 
 export const checkoutSchema = z
   .object({
     fulfillment: z.enum(['delivery', 'pickup']),
-    name: z.string().trim().min(2, 'Tell us your name.').max(60, 'Keep it under 60 characters.'),
+    name: z.string().trim().min(2, t.validation.nameRequired).max(60, t.validation.max60),
     phone: z
       .string()
       .trim()
-      .min(1, 'We need a number to confirm your order.')
-      .refine((value) => normalizeEgyptianMobile(value) !== null, 'Enter an Egyptian mobile number, like 0100 123 4567.'),
+      .min(1, t.validation.phoneRequired)
+      .refine((value) => normalizeEgyptianMobile(value) !== null, {
+        message: t.validation.phoneInvalid.replace('{example}', ltr(formatPhone('01001234567'))),
+      }),
     zoneId: z.string(),
-    street: z.string().trim().max(120, 'Keep it under 120 characters.'),
-    details: z.string().trim().max(120, 'Keep it under 120 characters.'),
-    landmark: z.string().trim().max(120, 'Keep it under 120 characters.'),
-    notes: z.string().trim().max(300, 'Keep notes under 300 characters.'),
+    street: z.string().trim().max(120, t.validation.max120),
+    details: z.string().trim().max(120, t.validation.max120),
+    landmark: z.string().trim().max(120, t.validation.max120),
+    notes: z.string().trim().max(300, t.validation.notesMax),
     saveDetails: z.boolean(),
   })
   .superRefine((values, ctx) => {
     if (values.fulfillment !== 'delivery') return;
-    if (!values.zoneId) ctx.addIssue({ code: 'custom', path: ['zoneId'], message: 'Choose your area.' });
+    if (!values.zoneId) ctx.addIssue({ code: 'custom', path: ['zoneId'], message: t.validation.zoneRequired });
     if (values.street.length < 4) {
-      ctx.addIssue({ code: 'custom', path: ['street'], message: 'Add your street and building number.' });
+      ctx.addIssue({ code: 'custom', path: ['street'], message: t.validation.streetRequired });
     }
   });
 
@@ -40,7 +43,7 @@ export const SERVER_FIELD_MAP: Record<string, keyof CheckoutValues> = {
   fulfillment: 'fulfillment',
 };
 
-export function toCreateOrderRequest(values: CheckoutValues, lines: CartLine[]): CreateOrderRequest {
+export function toCreateOrderRequest(values: CheckoutValues, lines: CartItem[]): CreateOrderRequest {
   return {
     fulfillment: values.fulfillment,
     customer: { name: values.name, phone: normalizeEgyptianMobile(values.phone) ?? values.phone },

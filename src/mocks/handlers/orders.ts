@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { endpoints } from '@/shared/api/endpoints';
 import { restaurant } from '@/shared/config/restaurant';
 import { firstName } from '@/shared/lib/format';
-import { ALL_STATUSES, canTransition, STATUS_META } from '@/shared/lib/order-status';
+import { ALL_STATUSES, canTransition, formatOrderCode, STATUS_META } from '@/shared/lib/order-status';
 import { normalizeEgyptianMobile } from '@/shared/lib/phone';
 import { calculateTotals, MAX_QUANTITY_PER_ITEM } from '@/shared/lib/pricing';
 import type {
@@ -14,6 +14,7 @@ import type {
   Paginated,
   UpdateOrderStatusRequest,
 } from '@/shared/types';
+import { fill, t } from '@/shared/i18n';
 import { db, type DbData } from '../db';
 import { orderCode } from '../seed/orders';
 import { api, fail, param, readJson, requireUser, route } from '../utils';
@@ -41,29 +42,29 @@ function validateOrder(body: Partial<CreateOrderRequest>, data: Readonly<DbData>
   const errors: Record<string, string> = {};
   const name = body.customer?.name?.trim() ?? '';
   const phone = normalizeEgyptianMobile(body.customer?.phone ?? '');
-  if (name.length < 2) errors['customer.name'] = 'Tell us your name.';
-  if (!phone) errors['customer.phone'] = 'Enter a valid Egyptian mobile number.';
-  if (body.fulfillment !== 'delivery' && body.fulfillment !== 'pickup') errors.fulfillment = 'Choose delivery or pickup.';
+  if (name.length < 2) errors['customer.name'] = t.validation.nameRequired;
+  if (!phone) errors['customer.phone'] = t.server.orderPhone;
+  if (body.fulfillment !== 'delivery' && body.fulfillment !== 'pickup') errors.fulfillment = t.server.orderFulfillment;
 
   const zone = body.fulfillment === 'delivery' ? data.zones.find((item) => item.id === body.address?.zoneId) : null;
   if (body.fulfillment === 'delivery') {
-    if (!zone) errors['address.zoneId'] = 'Choose your area.';
-    if ((body.address?.street?.trim() ?? '').length < 4) errors['address.street'] = 'Add your street address.';
+    if (!zone) errors['address.zoneId'] = t.validation.zoneRequired;
+    if ((body.address?.street?.trim() ?? '').length < 4) errors['address.street'] = t.server.orderStreet;
   }
 
   const lines = body.items ?? [];
-  if (!lines.length) errors.items = 'Your order is empty.';
-  if (Object.keys(errors).length) throw fail(422, 'validation_error', 'Some details need another look.', errors);
+  if (!lines.length) errors.items = t.server.orderEmpty;
+  if (Object.keys(errors).length) throw fail(422, 'validation_error', t.server.orderCheck, errors);
 
   const unavailable: string[] = [];
   const items: OrderItem[] = lines.map(({ productId, quantity }) => {
     const product = data.products.find((item) => item.id === productId);
     if (!product || !product.isAvailable) {
-      unavailable.push(product?.name ?? 'An item');
+      unavailable.push(product?.name ?? t.server.someItem);
       return null;
     }
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY_PER_ITEM) {
-      throw fail(422, 'validation_error', `Quantities must be between 1 and ${MAX_QUANTITY_PER_ITEM}.`);
+      throw fail(422, 'validation_error', fill(t.server.quantityRange, { max: MAX_QUANTITY_PER_ITEM }));
     }
     // Prices always come from the catalog, never from the client.
     return {
@@ -77,7 +78,7 @@ function validateOrder(body: Partial<CreateOrderRequest>, data: Readonly<DbData>
   }).filter((item): item is OrderItem => item !== null);
 
   if (unavailable.length) {
-    throw fail(409, 'items_unavailable', `Sold out just now: ${unavailable.join(', ')}. Remove it from your order and try again.`);
+    throw fail(409, 'items_unavailable', fill(t.server.soldOutNow, { names: unavailable.join('، ') }));
   }
 
   return { name, phone: phone as string, zone, items };
@@ -141,7 +142,7 @@ export const orderHandlers = [
       });
       return tracking
         ? HttpResponse.json(tracking)
-        : fail(404, 'not_found', `We could not find an order with the number ${code}.`);
+        : fail(404, 'not_found', fill(t.server.orderNotFound, { code: formatOrderCode(code) }));
     }),
   ),
 
@@ -180,7 +181,7 @@ export const orderHandlers = [
     route(({ request, params }) => {
       requireUser(request);
       const order = db.read((data) => data.orders.find((item) => item.id === param(params, 'id')));
-      return order ? HttpResponse.json(order) : fail(404, 'not_found', 'This order does not exist.');
+      return order ? HttpResponse.json(order) : fail(404, 'not_found', t.server.orderMissing);
     }),
   ),
 
@@ -189,16 +190,16 @@ export const orderHandlers = [
     route(async ({ request, params }) => {
       const user = requireUser(request);
       const { status, note } = await readJson<UpdateOrderStatusRequest>(request);
-      if (!status || !ALL_STATUSES.includes(status)) return fail(422, 'validation_error', 'Choose a valid status.');
+      if (!status || !ALL_STATUSES.includes(status)) return fail(422, 'validation_error', t.server.invalidStatus);
 
       const order = db.write((data) => {
         const existing = data.orders.find((item) => item.id === param(params, 'id'));
-        if (!existing) throw fail(404, 'not_found', 'This order does not exist.');
+        if (!existing) throw fail(404, 'not_found', t.server.orderMissing);
         if (!canTransition(existing.status, status)) {
           throw fail(
             409,
             'invalid_transition',
-            `Order ${existing.code} is already ${STATUS_META[existing.status].label.toLowerCase()} and cannot change.`,
+            fill(t.server.orderClosed, { code: formatOrderCode(existing.code), status: STATUS_META[existing.status].label }),
           );
         }
         const at = new Date().toISOString();

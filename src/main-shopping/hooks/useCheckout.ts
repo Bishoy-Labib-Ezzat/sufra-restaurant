@@ -8,7 +8,8 @@ import { queryKeys } from '@/shared/api/query-keys';
 import { useDeliveryZones, useProducts } from '@/shared/hooks/catalog';
 import { calculateTotals } from '@/shared/lib/pricing';
 import { checkoutSchema, savedDetails, SERVER_FIELD_MAP, toCreateOrderRequest, type CheckoutValues } from '../lib/checkout';
-import { useCartLines, useCartStore } from '../store/cart.store';
+import { useCartStore } from '../store/cart.store';
+import { useCartLines } from './useCart';
 import { useRecentOrders } from '../store/shop-ui.store';
 import { usePlaceOrder } from './orders';
 
@@ -31,9 +32,8 @@ function defaultValues(): CheckoutValues {
 export function useCheckout() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const lines = useCartLines();
+  const { lines, isPending: cartPending } = useCartLines();
   const clearCart = useCartStore((state) => state.clear);
-  const syncWithCatalog = useCartStore((state) => state.syncWithCatalog);
   const rememberOrder = useRecentOrders((state) => state.remember);
   const zones = useDeliveryZones();
   const products = useProducts();
@@ -46,11 +46,6 @@ export function useCheckout() {
     defaultValues: defaultValues(),
     mode: 'onTouched',
   });
-
-  // Prices or names may have changed since the item went into the cart.
-  useEffect(() => {
-    if (products.data) syncWithCatalog(products.data);
-  }, [products.data, syncWithCatalog]);
 
   // The area <select> only gets its options once zones load, so a remembered area set before that
   // is not shown. Re-apply it so the dropdown matches the form (and the fee in the summary).
@@ -101,6 +96,7 @@ export function useCheckout() {
   return {
     form,
     lines,
+    cartPending,
     zones,
     zone,
     totals,

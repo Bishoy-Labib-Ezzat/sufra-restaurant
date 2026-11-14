@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ArrowCounterClockwise, ArrowUpRight, SignOut } from '@phosphor-icons/react';
+import { ArrowCounterClockwise, ArrowUpLeft, SignOut } from '@phosphor-icons/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { apiConfig } from '@/shared/api/config';
 import { useAuth } from '@/shared/auth/auth-context';
 import { ROLE_LABEL } from '@/shared/auth/permissions';
+import { t } from '@/shared/i18n';
 import { initials } from '@/shared/lib/format';
 import { cn } from '@/shared/lib/cn';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
@@ -35,20 +36,20 @@ export function AccountActions() {
     queryClient.clear();
     setConfirmReset(false);
     logout('manual');
-    toast.success('Demo data restored. Sign in again to continue.');
+    toast.success(t.dashboard.account.resetDone);
   };
 
   if (!user) return null;
   return (
     <div className="flex flex-col gap-1">
       <a href="/" target="_blank" rel="noreferrer" className={linkRow}>
-        <ArrowUpRight size={18} weight="bold" aria-hidden />
-        Open the shop
+        <ArrowUpLeft size={18} weight="bold" aria-hidden />
+        {t.dashboard.account.openShop}
       </a>
       {apiConfig.useMocks && (
         <button type="button" onClick={() => setConfirmReset(true)} className={linkRow}>
           <ArrowCounterClockwise size={18} weight="bold" aria-hidden />
-          Reset demo data
+          {t.dashboard.account.resetDemo}
         </button>
       )}
       <div className="mt-3 flex items-center gap-3 border-t border-paper/12 pt-4">
@@ -60,8 +61,8 @@ export function AccountActions() {
         <button
           type="button"
           onClick={() => logout('manual')}
-          aria-label="Sign out"
-          title="Sign out"
+          aria-label={t.dashboard.account.signOut}
+          title={t.dashboard.account.signOut}
           className="grid size-10 place-items-center rounded-full text-paper/75 transition-colors hover:bg-paper/10 hover:text-paper"
         >
           <SignOut size={20} weight="bold" />
@@ -70,10 +71,10 @@ export function AccountActions() {
 
       <ConfirmDialog
         open={confirmReset}
-        title="Reset the demo?"
-        description="This puts back the original menu and a fresh week of orders. Anything you added or changed is lost, and you will be signed out."
-        confirmLabel="Reset demo data"
-        cancelLabel="Cancel"
+        title={t.dashboard.account.resetTitle}
+        description={t.dashboard.account.resetBody}
+        confirmLabel={t.dashboard.account.resetDemo}
+        cancelLabel={t.common.cancel}
         tone="danger"
         onConfirm={resetDemo}
         onCancel={() => setConfirmReset(false)}

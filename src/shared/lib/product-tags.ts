@@ -1,10 +1,8 @@
+import { t } from '@/shared/i18n';
 import type { ProductTag } from '@/shared/types';
 
-export const PRODUCT_TAGS: { value: ProductTag; label: string }[] = [
-  { value: 'signature', label: 'House favourite' },
-  { value: 'new', label: 'New' },
-  { value: 'vegetarian', label: 'Vegetarian' },
-  { value: 'spicy', label: 'Spicy' },
-];
+export const PRODUCT_TAGS: { value: ProductTag; label: string }[] = (['signature', 'new', 'vegetarian', 'spicy'] as const).map(
+  (value) => ({ value, label: t.tags[value] }),
+);
 
-export const tagLabel = (tag: ProductTag) => PRODUCT_TAGS.find((item) => item.value === tag)?.label ?? tag;
+export const tagLabel = (tag: ProductTag) => t.tags[tag] ?? tag;

@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import type { StaffRole, StaffUser } from '@/shared/types';
 
 export type Permission = 'orders:manage' | 'stats:view' | 'menu:manage';
@@ -8,8 +9,8 @@ const ROLE_PERMISSIONS: Record<StaffRole, Permission[]> = {
 };
 
 export const ROLE_LABEL: Record<StaffRole, string> = {
-  admin: 'Manager',
-  staff: 'Floor staff',
+  admin: t.roles.admin,
+  staff: t.roles.staff,
 };
 
 export function can(user: StaffUser | null, permission: Permission) {

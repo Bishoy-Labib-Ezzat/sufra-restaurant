@@ -1,3 +1,5 @@
+import { t } from '@/shared/i18n';
+
 /**
  * Builds a sized URL for Unsplash photos so lists never download full-resolution images.
  * Any other URL (uploads, data URLs) is returned untouched.
@@ -23,6 +25,6 @@ export async function resizeImage(file: File, maxSize = 1200, quality = 0.82): P
   canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
   return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not process this image.'))), 'image/jpeg', quality),
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error(t.errors.imageProcessing))), 'image/jpeg', quality),
   );
 }

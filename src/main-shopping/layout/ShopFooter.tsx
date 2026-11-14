@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { hoursLabel, restaurant } from '@/shared/config/restaurant';
+import { fill, t } from '@/shared/i18n';
 
 export function ShopFooter() {
   return (
@@ -8,34 +9,37 @@ export function ShopFooter() {
         <div className="flex flex-col gap-2 text-[15px] text-ink-soft">
           <p className="font-semibold text-ink">{restaurant.legalName}</p>
           <p>{restaurant.address}</p>
-          <p>Every day, {hoursLabel}</p>
-          <a href={`tel:${restaurant.phone}`} className="inline-flex min-h-11 items-center self-start font-mono text-ink hover:text-tomato-deep">
+          <p>{fill(t.restaurant.everyDay, { hours: hoursLabel })}</p>
+          <a
+            href={`tel:${restaurant.phone}`}
+            className="digits-ltr inline-flex min-h-11 items-center self-start font-mono text-ink hover:text-tomato-deep"
+          >
             {restaurant.phoneDisplay}
           </a>
         </div>
-        <nav aria-label="Footer" className="flex flex-col text-[15px]">
+        <nav aria-label={t.shop.footer.nav} className="flex flex-col text-[15px]">
           <Link to="/menu" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
-            Menu
+            {t.shop.footer.menu}
           </Link>
           <Link to="/track" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
-            Track an order
+            {t.shop.footer.track}
           </Link>
         </nav>
         <div className="flex flex-col text-[15px]">
           <Link to="/dashboard" className="inline-flex min-h-11 items-center self-start font-semibold hover:text-tomato-deep">
-            Staff sign in
+            {t.shop.footer.staff}
           </Link>
-          <p className="text-muted">Cash on delivery or at pickup.</p>
+          <p className="text-muted">{t.shop.footer.payment}</p>
         </div>
       </div>
       <p
         aria-hidden
-        className="display mx-auto mt-10 max-w-7xl px-2 text-center text-[27vw] leading-[0.78] text-ink select-none lg:text-[22rem]"
+        className="display mx-auto mt-10 max-w-7xl px-2 text-center text-[27vw] leading-[1.05] text-ink select-none lg:text-[22rem]"
       >
-        sufra
+        {t.brand.name}
       </p>
       <p className="mx-auto max-w-7xl px-4 pt-5 pb-24 text-center text-xs text-muted md:pb-5">
-        © {new Date().getFullYear()} {restaurant.legalName}.
+        {fill(t.shop.footer.copyright, { year: new Date().getFullYear(), name: restaurant.legalName })}
       </p>
     </footer>
   );

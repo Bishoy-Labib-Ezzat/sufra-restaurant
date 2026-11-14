@@ -4,7 +4,7 @@ import { MagnifyingGlass, PencilSimple, Plus, Star, Trash } from '@phosphor-icon
 import { RequirePermission } from '@/shared/auth/guards';
 import { useCategories, useProducts } from '@/shared/hooks/catalog';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
-import { pluralize } from '@/shared/lib/format';
+import { fill, plural, t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { cn } from '@/shared/lib/cn';
 import { Button, IconButton } from '@/shared/ui/Button';
@@ -22,7 +22,7 @@ import { useDeleteProduct, usePatchProduct } from '../hooks/menu';
 type Availability = 'all' | 'on' | 'off';
 
 function MenuItemsScreen() {
-  useDocumentTitle('Menu items');
+  useDocumentTitle(t.dashboard.menu.title);
   const [params, setParams] = useSearchParams();
   const categoryId = params.get('category') ?? '';
   const [search, setSearch] = useState('');
@@ -45,7 +45,7 @@ function MenuItemsScreen() {
       .filter((product) => !term || product.name.toLowerCase().includes(term))
       .sort(
         (a, b) =>
-          (categoryOrder.get(a.categoryId) ?? 0) - (categoryOrder.get(b.categoryId) ?? 0) || a.name.localeCompare(b.name),
+          (categoryOrder.get(a.categoryId) ?? 0) - (categoryOrder.get(b.categoryId) ?? 0) || a.name.localeCompare(b.name, 'ar'),
       );
   }, [products.data, categoryId, availability, search, categoryOrder]);
 
@@ -56,7 +56,7 @@ function MenuItemsScreen() {
     <Switch
       checked={product.isAvailable}
       hideLabel
-      label={`${product.name} on sale today`}
+      label={fill(t.dashboard.menu.onSaleToday, { name: product.name })}
       disabled={busyId === product.id}
       onChange={(isAvailable) => patch.mutate({ product, changes: { isAvailable } })}
     />
@@ -66,7 +66,7 @@ function MenuItemsScreen() {
     <button
       type="button"
       aria-pressed={product.isFeatured}
-      aria-label={`Feature ${product.name} on the home page`}
+      aria-label={fill(t.dashboard.menu.feature, { name: product.name })}
       disabled={busyId === product.id}
       onClick={() => patch.mutate({ product, changes: { isFeatured: !product.isFeatured } })}
       className={cn(
@@ -82,14 +82,14 @@ function MenuItemsScreen() {
     <>
       <Link
         to={`/dashboard/menu/${product.id}`}
-        aria-label={`Edit ${product.name}`}
+        aria-label={fill(t.dashboard.menu.edit, { name: product.name })}
         className={cn(buttonStyles({ variant: 'ghost' }), 'size-11 px-0')}
       >
         <PencilSimple size={18} weight="bold" />
       </Link>
       <IconButton
         icon={Trash}
-        label={`Delete ${product.name}`}
+        label={fill(t.dashboard.menu.delete, { name: product.name })}
         onClick={() => setDeleting(product)}
         className="hover:bg-danger-wash hover:text-danger"
       />
@@ -99,34 +99,38 @@ function MenuItemsScreen() {
   return (
     <>
       <PageHeader
-        title="Menu items"
+        title={t.dashboard.menu.title}
         description={
           products.data &&
-          `${pluralize(products.data.length, 'item')} across ${pluralize(categories.data?.length ?? 0, 'category', 'categories')}. ${soldOut ? `${soldOut} sold out today.` : 'Everything is on sale.'}`
+          fill(t.dashboard.menu.summary, {
+            items: plural(t.plurals.items, products.data.length),
+            categories: plural(t.plurals.categories, categories.data?.length ?? 0),
+            sold: soldOut ? fill(t.dashboard.menu.soldOut, { items: plural(t.plurals.items, soldOut) }) : t.dashboard.menu.allOnSale,
+          })
         }
         actions={
           <Link to={categoryId ? `/dashboard/menu/new?category=${categoryId}` : '/dashboard/menu/new'} className={buttonStyles({ variant: 'ink' })}>
             <Plus size={18} weight="bold" aria-hidden />
-            New item
+            {t.dashboard.menu.new}
           </Link>
         }
       />
 
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
         <label className="relative lg:w-72">
-          <span className="sr-only">Search items</span>
-          <MagnifyingGlass size={18} weight="bold" aria-hidden className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
-          <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name" className="rounded-full pl-11" />
+          <span className="sr-only">{t.dashboard.menu.search}</span>
+          <MagnifyingGlass size={18} weight="bold" aria-hidden className="pointer-events-none absolute top-1/2 start-4 -translate-y-1/2 text-muted" />
+          <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.dashboard.menu.searchPlaceholder} className="rounded-full ps-11" />
         </label>
         <Select
-          aria-label="Category"
+          aria-label={t.dashboard.menu.category}
           value={categoryId}
           onChange={(event) =>
             setParams(event.target.value ? { category: event.target.value } : {}, { replace: true, preventScrollReset: true })
           }
           className="rounded-full lg:w-56"
         >
-          <option value="">All categories</option>
+          <option value="">{t.dashboard.menu.allCategories}</option>
           {categories.data?.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -134,14 +138,14 @@ function MenuItemsScreen() {
           ))}
         </Select>
         <Segmented<Availability>
-          label="Availability"
+          label={t.dashboard.menu.availability}
           size="sm"
           value={availability}
           onChange={setAvailability}
           options={[
-            { value: 'all', label: 'All' },
-            { value: 'on', label: 'On sale' },
-            { value: 'off', label: 'Sold out' },
+            { value: 'all', label: t.dashboard.menu.all },
+            { value: 'on', label: t.dashboard.menu.onSale },
+            { value: 'off', label: t.dashboard.menu.soldOutFilter },
           ]}
         />
       </div>
@@ -153,8 +157,8 @@ function MenuItemsScreen() {
       ) : visible.length === 0 ? (
         <EmptyState
           icon={MagnifyingGlass}
-          title="No items match"
-          description="Change the filters, or add a new item to this category."
+          title={t.dashboard.menu.noMatch}
+          description={t.dashboard.menu.noMatchBody}
           action={
             <Button
               variant="secondary"
@@ -164,7 +168,7 @@ function MenuItemsScreen() {
                 setParams({}, { replace: true });
               }}
             >
-              Clear filters
+              {t.common.clearFilters}
             </Button>
           }
         />
@@ -198,15 +202,15 @@ function MenuItemsScreen() {
           </ul>
 
           <div className="relative hidden overflow-hidden rounded-panel bg-surface ring-1 ring-line md:block">
-            <table className="w-full text-left text-[15px]">
+            <table className="w-full text-start text-[15px]">
               <thead className="border-b border-line text-sm whitespace-nowrap text-muted">
                 <tr>
-                  <th scope="col" className="px-5 py-3 font-semibold">Item</th>
-                  <th scope="col" className="hidden px-5 py-3 font-semibold xl:table-cell">Category</th>
-                  <th scope="col" className="px-5 py-3 text-right font-semibold">Price</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">On sale</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Home page</th>
-                  <th scope="col" className="px-5 py-3 text-right font-semibold"><span className="sr-only">Actions</span></th>
+                  <th scope="col" className="px-5 py-3 font-semibold">{t.dashboard.menu.colItem}</th>
+                  <th scope="col" className="hidden px-5 py-3 font-semibold xl:table-cell">{t.dashboard.menu.colCategory}</th>
+                  <th scope="col" className="px-5 py-3 text-end font-semibold">{t.dashboard.menu.colPrice}</th>
+                  <th scope="col" className="px-5 py-3 font-semibold">{t.dashboard.menu.colOnSale}</th>
+                  <th scope="col" className="px-5 py-3 font-semibold">{t.dashboard.menu.colHome}</th>
+                  <th scope="col" className="px-5 py-3 text-end font-semibold"><span className="sr-only">{t.dashboard.menu.colActions}</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -229,7 +233,7 @@ function MenuItemsScreen() {
                       </div>
                     </td>
                     <td className="hidden px-5 py-3 text-ink-soft xl:table-cell">{categoryName.get(product.categoryId)}</td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-5 py-3 text-end">
                       <Price amount={product.price} />
                     </td>
                     <td className="px-5 py-3">{renderAvailability(product)}</td>
@@ -247,9 +251,9 @@ function MenuItemsScreen() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title={`Delete ${deleting?.name ?? 'item'}?`}
-        description="It disappears from the menu straight away. To hide it for a day, switch off 'On sale' instead."
-        confirmLabel="Delete item"
+        title={fill(t.dashboard.menu.deleteTitle, { name: deleting?.name ?? t.dashboard.menu.deleteFallback })}
+        description={t.dashboard.menu.deleteBody}
+        confirmLabel={t.dashboard.menu.deleteConfirm}
         tone="danger"
         loading={remove.isPending}
         onConfirm={() => deleting && remove.mutate(deleting, { onSettled: () => setDeleting(null) })}

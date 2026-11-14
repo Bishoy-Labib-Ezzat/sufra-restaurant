@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { cn } from '@/shared/lib/cn';
 import { Price } from '@/shared/ui/Price';
@@ -12,19 +13,19 @@ interface MenuItemProps {
   className?: string;
 }
 
-/** A single menu line: text on the left, plate on the right, add control resting on the plate's edge. */
+/** A single menu line: text at the start, plate at the end, add control resting on the plate's edge. */
 export function MenuItem({ product, onOpen, className }: MenuItemProps) {
   const soldOut = !product.isAvailable;
 
   return (
     <article className={cn('group relative grid grid-cols-[1fr_auto] gap-4 py-5 sm:gap-6', className)}>
       <div className="flex min-w-0 flex-col gap-1.5">
-        <h3 className="font-display text-[1.3rem] leading-tight font-bold tracking-tight text-ink">
+        <h3 className="font-display text-[1.35rem] leading-snug text-ink">
           {onOpen ? (
             <button
               type="button"
               onClick={() => onOpen(product)}
-              className="text-left after:absolute after:inset-0 after:rounded-panel after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-tomato"
+              className="text-start after:absolute after:inset-0 after:rounded-panel after:content-[''] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-tomato"
             >
               {product.name}
             </button>
@@ -59,7 +60,7 @@ export function MenuItem({ product, onOpen, className }: MenuItemProps) {
             <AddControl product={product} />
           ) : (
             <span aria-hidden className="inline-flex h-9 items-center rounded-full bg-ink px-4 text-sm font-semibold text-paper shadow-lift">
-              {soldOut ? 'Sold out today' : '+ Add'}
+              {soldOut ? t.common.soldOutToday : t.shop.menu.addPreview}
             </span>
           )}
         </div>

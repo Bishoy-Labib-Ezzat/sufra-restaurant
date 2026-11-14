@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, LayoutGroup } from 'motion/react';
 import { CheckCircle } from '@phosphor-icons/react';
 import { useNow } from '@/shared/hooks/useNow';
+import { formatNumber, t } from '@/shared/i18n';
 import { nextStatus, OPEN_STATUSES, STATUS_META } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
 import { Segmented } from '@/shared/ui/form';
@@ -9,13 +10,7 @@ import type { Order, OrderStatus } from '@/shared/types';
 import { useUpdateOrderStatus } from '../../hooks/orders';
 import { OrderTicket } from './OrderTicket';
 
-const LANE_HINT: Partial<Record<OrderStatus, string>> = {
-  new: 'Waiting for someone to pick them up',
-  reviewing: 'Call the customer to confirm',
-  confirmed: 'Confirmed on the phone',
-  preparing: 'On the grill',
-  ready: 'Waiting for a rider or the customer',
-};
+const LANE_HINT: Partial<Record<OrderStatus, string>> = t.dashboard.orders.laneHints;
 
 interface OrderBoardProps {
   orders: Order[];
@@ -45,7 +40,7 @@ export function OrderBoard({ orders, onOpen }: OrderBoardProps) {
       <Segmented<OrderStatus>
         className="scrollbar-none mb-4 flex max-w-full overflow-x-auto md:hidden"
         size="sm"
-        label="Lane"
+        label={t.dashboard.orders.lane}
         value={mobileLane}
         onChange={setMobileLane}
         options={lanes.map(({ status, orders: laneOrders }) => ({
@@ -53,7 +48,7 @@ export function OrderBoard({ orders, onOpen }: OrderBoardProps) {
           label: (
             <>
               {STATUS_META[status].label}
-              <span className="font-mono text-xs opacity-70">{laneOrders.length}</span>
+              <span className="font-mono text-xs opacity-70">{formatNumber(laneOrders.length)}</span>
             </>
           ),
         }))}
@@ -69,11 +64,11 @@ export function OrderBoard({ orders, onOpen }: OrderBoardProps) {
             <header className="flex items-center justify-between px-1 pt-1">
               <div className="flex items-center gap-2">
                 <span className={cn('size-2.5 rounded-full', STATUS_META[status].tone.marker)} aria-hidden />
-                <h2 id={`lane-${status}`} className="font-display text-lg font-bold">
+                <h2 id={`lane-${status}`} className="font-display text-xl">
                   {STATUS_META[status].label}
                 </h2>
               </div>
-              <span className="font-mono text-sm font-semibold text-ink-soft">{laneOrders.length}</span>
+              <span className="font-mono text-sm font-semibold text-ink-soft">{formatNumber(laneOrders.length)}</span>
             </header>
             <p className="-mt-2 px-1 text-xs text-muted">{LANE_HINT[status]}</p>
 
@@ -93,7 +88,7 @@ export function OrderBoard({ orders, onOpen }: OrderBoardProps) {
               {laneOrders.length === 0 && (
                 <p className="flex flex-1 flex-col items-center justify-center gap-1 rounded-field border border-dashed border-line-strong px-3 py-8 text-center text-sm text-muted">
                   <CheckCircle size={20} weight="bold" aria-hidden />
-                  Nothing here
+                  {t.dashboard.orders.laneEmpty}
                 </p>
               )}
             </div>

@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { endpoints } from '@/shared/api/endpoints';
+import { t } from '@/shared/i18n';
 import type { AuthSession, LoginRequest } from '@/shared/types';
 import { db } from '../db';
 import { api, fail, readJson, requireUser, route } from '../utils';
@@ -12,7 +13,7 @@ export const authHandlers = [
     route(async ({ request }) => {
       const { email = '', password = '' } = await readJson<LoginRequest>(request);
       if (!email.trim() || !password) {
-        return fail(422, 'validation_error', 'Enter your email and password.');
+        return fail(422, 'validation_error', t.server.loginMissing);
       }
 
       const session = db.write((data): AuthSession | null => {
@@ -28,7 +29,7 @@ export const authHandlers = [
         return { token, expiresAt, user: { id, name, email: user.email, role, title } };
       });
 
-      if (!session) return fail(401, 'invalid_credentials', 'That email and password do not match.');
+      if (!session) return fail(401, 'invalid_credentials', t.server.loginWrong);
       return HttpResponse.json(session);
     }),
   ),

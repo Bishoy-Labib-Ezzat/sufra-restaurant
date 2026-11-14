@@ -1,12 +1,13 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { Plus } from '@phosphor-icons/react';
+import { fill, t } from '@/shared/i18n';
 import { QuantityStepper } from '@/shared/ui/QuantityStepper';
 import { cn } from '@/shared/lib/cn';
 import type { Product } from '@/shared/types';
 import { useAddToCart } from '../../hooks/useAddToCart';
 import { useCartQuantity, useCartStore } from '../../store/cart.store';
 
-/** "+ Add" pill that turns into a quantity stepper once the dish is in the order. */
+/** "+ أضف" pill that turns into a quantity stepper once the dish is in the order. */
 export function AddControl({ product, className }: { product: Product; className?: string }) {
   const quantity = useCartQuantity(product.id);
   const setQuantity = useCartStore((state) => state.setQuantity);
@@ -15,7 +16,7 @@ export function AddControl({ product, className }: { product: Product; className
   if (!product.isAvailable) {
     return (
       <span className={cn('inline-flex h-9 items-center rounded-full bg-paper-deep px-3.5 text-xs font-semibold text-muted', className)}>
-        Sold out today
+        {t.common.soldOutToday}
       </span>
     );
   }
@@ -32,11 +33,11 @@ export function AddControl({ product, className }: { product: Product; className
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: 'spring', stiffness: 500, damping: 32 }}
             onClick={() => addToCart(product)}
-            aria-label={`Add ${product.name} to your order`}
-            className="inline-flex h-9 items-center gap-1 rounded-full bg-ink pr-4 pl-3 text-sm font-semibold text-paper shadow-lift pointer-coarse:h-11 transition-colors hover:bg-tomato active:scale-95"
+            aria-label={fill(t.shop.menu.addToOrder, { name: product.name })}
+            className="inline-flex h-9 items-center gap-1 rounded-full bg-ink pe-4 ps-3 text-sm font-semibold text-paper shadow-lift pointer-coarse:h-11 transition-colors hover:bg-tomato active:scale-95"
           >
             <Plus size={16} weight="bold" aria-hidden />
-            Add
+            {t.shop.menu.add}
           </motion.button>
         ) : (
           <motion.div

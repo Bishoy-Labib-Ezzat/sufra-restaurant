@@ -2,12 +2,13 @@ import { lazy, Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
-import { ArrowLeft, Eye, EyeSlash, WarningCircle } from '@phosphor-icons/react';
+import { ArrowRight, Eye, EyeSlash, WarningCircle } from '@phosphor-icons/react';
 import { z } from 'zod';
 import { apiConfig } from '@/shared/api/config';
 import { getErrorMessage } from '@/shared/api/errors';
 import { useAuth } from '@/shared/auth/auth-context';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { Button } from '@/shared/ui/Button';
 import { Checkbox, Field, Input } from '@/shared/ui/form';
@@ -15,8 +16,8 @@ import { Logo } from '@/shared/ui/Logo';
 import { InlineNotice } from '@/shared/ui/states';
 
 const schema = z.object({
-  email: z.email('Enter the email you use at work.'),
-  password: z.string().min(1, 'Enter your password.'),
+  email: z.email(t.validation.emailInvalid),
+  password: z.string().min(1, t.validation.passwordRequired),
   remember: z.boolean(),
 });
 type LoginValues = z.infer<typeof schema>;
@@ -32,7 +33,7 @@ function safeNext(next: string | null) {
 }
 
 export function LoginPage() {
-  useDocumentTitle('Staff sign in');
+  useDocumentTitle(t.dashboard.login.title);
   const { status, login } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -69,22 +70,22 @@ export function LoginPage() {
         <div className="absolute inset-0 bg-linear-to-t from-ink via-ink/30 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-12 text-paper">
           <Logo tone="paper" />
-          <p className="display max-w-md text-6xl">Run the pass from one screen.</p>
-          <p className="max-w-sm text-lg text-paper/75">Incoming orders, the menu and today&rsquo;s numbers, for the Sufra team.</p>
+          <p className="display max-w-md text-6xl leading-[1.2]">{t.dashboard.login.tagline}</p>
+          <p className="max-w-sm text-lg text-paper/75">{t.dashboard.login.taglineBody}</p>
         </div>
       </div>
 
       <div className="flex flex-col px-5 py-8 sm:px-10">
         <Link to="/" className="inline-flex items-center gap-2 self-start text-sm font-semibold text-ink-soft hover:text-ink">
-          <ArrowLeft size={16} weight="bold" aria-hidden />
-          Back to the shop
+          <ArrowRight size={16} weight="bold" aria-hidden />
+          {t.dashboard.login.backToShop}
         </Link>
 
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-8 py-10">
           <div className="flex flex-col gap-2">
             <Logo className="mb-4 lg:hidden" />
-            <h1 className="display text-5xl sm:text-6xl">Staff sign in</h1>
-            <p className="text-[15px] text-muted">The dashboard is for the restaurant team only.</p>
+            <h1 className="display text-5xl leading-[1.2] sm:text-6xl">{t.dashboard.login.heading}</h1>
+            <p className="text-[15px] text-muted">{t.dashboard.login.subheading}</p>
           </div>
 
           <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
@@ -93,19 +94,20 @@ export function LoginPage() {
                 {getErrorMessage(error)}
               </InlineNotice>
             )}
-            <Field label="Work email" error={errors.email?.message}>
+            <Field label={t.dashboard.login.email} error={errors.email?.message}>
               {({ id, describedBy, invalid }) => (
-                <Input id={id} type="email" autoComplete="username" aria-describedby={describedBy} aria-invalid={invalid} {...register('email')} />
+                <Input id={id} type="email" dir="ltr" className="text-end" autoComplete="username" aria-describedby={describedBy} aria-invalid={invalid} {...register('email')} />
               )}
             </Field>
-            <Field label="Password" error={errors.password?.message}>
+            <Field label={t.dashboard.login.password} error={errors.password?.message}>
               {({ id, describedBy, invalid }) => (
                 <div className="relative">
                   <Input
                     id={id}
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
-                    className="pr-12"
+                    dir="ltr"
+                    className="ps-12 text-end"
                     aria-describedby={describedBy}
                     aria-invalid={invalid}
                     {...register('password')}
@@ -113,18 +115,18 @@ export function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((value) => !value)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? t.dashboard.login.hidePassword : t.dashboard.login.showPassword}
                     aria-pressed={showPassword}
-                    className="absolute top-1/2 right-2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
+                    className="absolute top-1/2 end-2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-ink/6 hover:text-ink"
                   >
                     {showPassword ? <EyeSlash size={18} weight="bold" /> : <Eye size={18} weight="bold" />}
                   </button>
                 </div>
               )}
             </Field>
-            <Checkbox label="Keep me signed in on this device" {...register('remember')} />
+            <Checkbox label={t.dashboard.login.remember} {...register('remember')} />
             <Button type="submit" variant="ink" size="lg" block loading={isSubmitting || status === 'checking'}>
-              Sign in
+              {t.dashboard.login.submit}
             </Button>
           </form>
 

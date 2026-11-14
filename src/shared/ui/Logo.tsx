@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 
 /** Brand mark: a plate seen from above, set on the table line. */
@@ -16,7 +17,7 @@ export function Logo({ className, tone = 'ink' }: { className?: string; tone?: '
     <span className={cn('inline-flex items-center gap-2', className)}>
       <LogoMark />
       <span className={cn('display text-[1.9rem] leading-none', tone === 'paper' ? 'text-paper' : 'text-ink')}>
-        sufra
+        {t.brand.name}
       </span>
     </span>
   );

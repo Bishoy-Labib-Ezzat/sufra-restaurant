@@ -14,7 +14,7 @@ export function PageHeader({ title, description, actions, above }: PageHeaderPro
     <header className="flex flex-col gap-5 pb-8 md:flex-row md:items-end md:justify-between">
       <div className="flex min-w-0 flex-col gap-2">
         {above}
-        <h1 className="display text-5xl sm:text-6xl">{title}</h1>
+        <h1 className="display text-5xl leading-[1.2] sm:text-6xl">{title}</h1>
         {description && <p className="max-w-[60ch] text-[15px] text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -38,7 +38,7 @@ export function Panel({
     <section className={cn('rounded-panel bg-surface p-5 ring-1 ring-line sm:p-6', className)}>
       {(title || aside) && (
         <div className="mb-5 flex items-baseline justify-between gap-4">
-          {title && <h2 className="font-display text-xl font-bold tracking-tight">{title}</h2>}
+          {title && <h2 className="font-display text-2xl">{title}</h2>}
           {aside && <div className="text-sm text-muted">{aside}</div>}
         </div>
       )}

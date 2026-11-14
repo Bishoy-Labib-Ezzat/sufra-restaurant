@@ -1,3 +1,4 @@
+import { t } from '@/shared/i18n';
 import type { ApiErrorBody } from '@/shared/types';
 
 export class ApiError extends Error {
@@ -13,7 +14,7 @@ export class ApiError extends Error {
     this.fieldErrors = body.fieldErrors ?? {};
   }
 
-  static network(message = 'We could not reach the server. Check your connection and try again.') {
+  static network(message = t.errors.network) {
     return new ApiError(0, { code: 'network_error', message });
   }
 
@@ -34,7 +35,7 @@ export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
 
-export function getErrorMessage(error: unknown, fallback = 'Something went wrong. Please try again.') {
+export function getErrorMessage(error: unknown, fallback = t.errors.generic) {
   if (isApiError(error)) return error.message;
   if (error instanceof Error && error.message) return error.message;
   return fallback;

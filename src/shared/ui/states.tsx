@@ -1,6 +1,7 @@
 import type { ElementType, ReactNode } from 'react';
 import { ArrowClockwise, PlugsConnected } from '@phosphor-icons/react';
 import { getErrorMessage } from '@/shared/api/errors';
+import { t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 import { Button } from './Button';
 
@@ -16,7 +17,7 @@ interface ErrorStateProps {
   compact?: boolean;
 }
 
-export function ErrorState({ error, onRetry, retrying, title = 'This did not load', compact }: ErrorStateProps) {
+export function ErrorState({ error, onRetry, retrying, title = t.states.loadFailed, compact }: ErrorStateProps) {
   return (
     <div
       role="alert"
@@ -34,7 +35,7 @@ export function ErrorState({ error, onRetry, retrying, title = 'This did not loa
       </div>
       {onRetry && (
         <Button variant="secondary" size="sm" icon={ArrowClockwise} loading={retrying} onClick={onRetry}>
-          Try again
+          {t.common.tryAgain}
         </Button>
       )}
     </div>
@@ -44,7 +45,7 @@ export function ErrorState({ error, onRetry, retrying, title = 'This did not loa
 
 export function LoadingRows({ rows = 4, className }: { rows?: number; className?: string }) {
   return (
-    <div className={cn('flex flex-col gap-3', className)} role="status" aria-label="Loading">
+    <div className={cn('flex flex-col gap-3', className)} role="status" aria-label={t.common.loading}>
       {Array.from({ length: rows }, (_, index) => (
         <Skeleton key={index} className="h-16 w-full" />
       ))}

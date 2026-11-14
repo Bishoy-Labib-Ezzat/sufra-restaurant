@@ -26,7 +26,8 @@ export interface DbData {
 }
 
 const STORAGE_KEY = 'sufra.mock-db';
-const VERSION = 1;
+// Bumped whenever the seed changes, so browsers holding older demo data get a fresh copy (2: Arabic).
+const VERSION = 2;
 
 function createSeed(): DbData {
   const now = new Date();

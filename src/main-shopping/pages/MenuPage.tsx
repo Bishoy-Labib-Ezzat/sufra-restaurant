@@ -1,5 +1,6 @@
 import { MagnifyingGlass } from '@phosphor-icons/react';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { fill, t } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
 import { ErrorState, Skeleton } from '@/shared/ui/states';
@@ -13,7 +14,7 @@ import { sectionId } from '../lib/menu';
 
 function MenuSkeleton() {
   return (
-    <div role="status" aria-label="Loading the menu" className="flex flex-col gap-12 pt-8">
+    <div role="status" aria-label={t.shop.menu.loading} className="flex flex-col gap-12 pt-8">
       <div className="flex gap-2">
         {Array.from({ length: 6 }, (_, index) => (
           <Skeleton key={index} className="h-9 w-28 rounded-full" />
@@ -41,7 +42,7 @@ function MenuSkeleton() {
 }
 
 export function MenuPage() {
-  useDocumentTitle('Menu');
+  useDocumentTitle(t.shop.menu.title);
   const { filters, update, reset, isFiltered } = useMenuFilters();
   const { sections, isLoading, error, refetch, isRefetching } = useMenu(filters);
   const { open } = useProductDialog();
@@ -51,9 +52,9 @@ export function MenuPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-8 pt-10 pb-8 sm:pt-14">
         <div className="flex flex-col gap-3">
-          <h1 className="display text-[clamp(4rem,11vw,8.5rem)] leading-[0.85]">The menu</h1>
+          <h1 className="display text-[clamp(4rem,11vw,8.5rem)] leading-[1.1]">{t.shop.menu.heading}</h1>
           <p className="max-w-[52ch] text-lg text-ink-soft">
-            Everything is cooked to order. Tap a dish for the details, or add it straight to your order.
+            {t.shop.menu.intro}
           </p>
         </div>
         <MenuToolbar filters={filters} onChange={update} />
@@ -62,16 +63,16 @@ export function MenuPage() {
       {isLoading ? (
         <MenuSkeleton />
       ) : error ? (
-        <ErrorState error={error} onRetry={refetch} retrying={isRefetching} title="The menu did not load" />
+        <ErrorState error={error} onRetry={refetch} retrying={isRefetching} title={t.shop.menu.loadFailed} />
       ) : sections.length === 0 ? (
         <EmptyState
           icon={MagnifyingGlass}
-          title={filters.search ? `Nothing matches "${filters.search}"` : 'Nothing matches these filters'}
-          description="Try a different word, or clear the filters to see the whole menu."
+          title={filters.search ? fill(t.shop.menu.noMatchSearch, { term: filters.search }) : t.shop.menu.noMatch}
+          description={t.shop.menu.noMatchHint}
           action={
             isFiltered && (
               <Button variant="ink" onClick={reset}>
-                Clear filters
+                {t.common.clearFilters}
               </Button>
             )
           }

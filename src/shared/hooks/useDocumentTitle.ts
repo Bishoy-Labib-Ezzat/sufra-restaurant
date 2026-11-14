@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { t } from '@/shared/i18n';
 
 // The tab title has two owners: the current page sets its name, and the dashboard sets a badge
 // (the number of new orders). Keeping both here means neither overwrites the other.
@@ -14,7 +15,7 @@ export function setTitleBadge(count: number) {
   render();
 }
 
-export function useDocumentTitle(title: string, suffix = 'Sufra') {
+export function useDocumentTitle(title: string, suffix = t.meta.titleSuffix) {
   useEffect(() => {
     pageTitle = title ? `${title} | ${suffix}` : suffix;
     render();

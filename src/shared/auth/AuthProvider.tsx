@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { useQueryClient } from '@tanstack/react-query';
 import { configureApiClient } from '@/shared/api/client';
 import { queryKeys } from '@/shared/api/query-keys';
+import { t } from '@/shared/i18n';
 import { authService } from '@/shared/services/auth.service';
 import { toast } from '@/shared/ui/toast-store';
 import type { LoginRequest, StaffUser } from '@/shared/types';
@@ -24,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Staff data must not survive into the next session on a shared counter tablet.
       queryClient.removeQueries({ queryKey: queryKeys.orders.all });
       queryClient.removeQueries({ queryKey: queryKeys.stats.overview });
-      if (reason === 'expired') toast.info('Your session ended. Please sign in again.');
+      if (reason === 'expired') toast.info(t.dashboard.account.sessionExpired);
     },
     [queryClient],
   );

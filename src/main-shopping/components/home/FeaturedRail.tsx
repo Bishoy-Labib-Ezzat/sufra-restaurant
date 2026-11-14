@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router';
 import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
 import { useProducts } from '@/shared/hooks/catalog';
+import { t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { IconButton } from '@/shared/ui/Button';
 import { Price } from '@/shared/ui/Price';
@@ -21,7 +22,7 @@ function FeaturedCard({ product }: { product: Product }) {
           loading="lazy"
           className="size-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105"
         />
-        <div className="absolute right-3 bottom-3 z-10">
+        <div className="absolute end-3 bottom-3 z-10">
           <AddControl product={product} />
         </div>
       </div>
@@ -30,7 +31,7 @@ function FeaturedCard({ product }: { product: Product }) {
           <button
             type="button"
             onClick={() => open(product.id)}
-            className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+            className="text-start after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
           >
             {product.name}
           </button>
@@ -45,23 +46,24 @@ function FeaturedCard({ product }: { product: Product }) {
 export function FeaturedRail() {
   const featured = useProducts({ featured: true, available: true });
   const rail = useRef<HTMLUListElement>(null);
-  const scroll = (direction: 1 | -1) => rail.current?.scrollBy({ left: direction * 300, behavior: 'smooth' });
+  // Right to left: moving forward means scrolling towards the left, so the offset is negative.
+  const scroll = (direction: 1 | -1) => rail.current?.scrollBy({ left: -direction * 300, behavior: 'smooth' });
 
   return (
     <section className="mx-auto max-w-7xl py-24">
       <div className="flex items-end justify-between gap-6 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-2">
-          <h2 className="display text-5xl sm:text-6xl">Start with these</h2>
+          <h2 className="display text-5xl sm:text-6xl">{t.shop.home.featured.title}</h2>
           <p className="text-[15px] text-muted">
-            The plates our regulars come back for.{' '}
+            {t.shop.home.featured.body}{' '}
             <Link to="/menu" className="font-semibold text-ink underline underline-offset-4">
-              See the full menu
+              {t.shop.home.featured.seeAll}
             </Link>
           </p>
         </div>
         <div className="hidden gap-2 sm:flex">
-          <IconButton icon={ArrowLeft} label="Scroll back" variant="secondary" onClick={() => scroll(-1)} />
-          <IconButton icon={ArrowRight} label="Scroll forward" variant="secondary" onClick={() => scroll(1)} />
+          <IconButton icon={ArrowRight} label={t.shop.home.featured.back} variant="secondary" onClick={() => scroll(-1)} />
+          <IconButton icon={ArrowLeft} label={t.shop.home.featured.forward} variant="secondary" onClick={() => scroll(1)} />
         </div>
       </div>
 

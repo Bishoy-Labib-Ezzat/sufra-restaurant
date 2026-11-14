@@ -1,5 +1,6 @@
 import { delay, HttpResponse, type DefaultBodyType, type HttpResponseResolver, type PathParams } from 'msw';
 import { apiConfig } from '@/shared/api/config';
+import { t } from '@/shared/i18n';
 import type { ApiErrorBody, StaffRole, StaffUser } from '@/shared/types';
 import { db } from './db';
 
@@ -26,14 +27,14 @@ export function route(resolver: Resolver): HttpResponseResolver<PathParams, Defa
   return async ({ request, params }) => {
     await delay(latencyMin + Math.random() * Math.max(0, latencyMax - latencyMin));
     if (errorRate > 0 && Math.random() < errorRate) {
-      return fail(503, 'service_unavailable', 'The server is busy right now. Please try again.');
+      return fail(503, 'service_unavailable', t.server.busy);
     }
     try {
       return await resolver({ request, params });
     } catch (error) {
       if (error instanceof Response) return error;
       console.error('[mock api]', error);
-      return fail(500, 'server_error', 'Something went wrong on our side. Please try again.');
+      return fail(500, 'server_error', t.server.internal);
     }
   };
 }
@@ -42,7 +43,7 @@ export async function readJson<T>(request: Request): Promise<Partial<T>> {
   try {
     return (await request.json()) as Partial<T>;
   } catch {
-    throw fail(400, 'invalid_json', 'The request body is not valid JSON.');
+    throw fail(400, 'invalid_json', t.server.invalidBody);
   }
 }
 
@@ -59,9 +60,9 @@ export function requireUser(request: Request, roles?: StaffRole[]): StaffUser {
       })
     : null;
 
-  if (!user) throw fail(401, 'unauthorized', 'Your session has ended. Please sign in again.');
+  if (!user) throw fail(401, 'unauthorized', t.server.sessionEnded);
   if (roles && !roles.includes(user.role)) {
-    throw fail(403, 'forbidden', 'Your account is not allowed to do this. Ask a manager.');
+    throw fail(403, 'forbidden', t.server.forbidden);
   }
   const { id, name, email, role, title } = user;
   return { id, name, email, role, title };
@@ -71,6 +72,7 @@ export const slugify = (value: string) =>
   value
     .toLowerCase()
     .trim()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/&/g, '-')
+    // Keeps Arabic letters too, so a category named in Arabic still gets a usable anchor.
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/(^-|-$)/g, '');

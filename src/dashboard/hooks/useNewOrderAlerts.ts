@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/shared/api/query-keys';
 import { setTitleBadge } from '@/shared/hooks/useDocumentTitle';
+import { fill, t } from '@/shared/i18n';
 import { firstName, formatMoney } from '@/shared/lib/format';
+import { formatOrderCode } from '@/shared/lib/order-status';
 import { ordersService } from '@/shared/services/orders.service';
 import { toast } from '@/shared/ui/toast-store';
 import { ORDERS_POLL_MS } from './orders';
@@ -34,9 +36,14 @@ export function useNewOrderAlerts() {
     for (const order of data.items) {
       if (seen.current.has(order.id)) continue;
       seen.current.add(order.id);
-      toast.info(`New order ${order.code} from ${firstName(order.customer.name)}, ${formatMoney(order.total)}`, {
+      const message = fill(t.dashboard.orders.newOrder, {
+        code: formatOrderCode(order.code),
+        name: firstName(order.customer.name),
+        total: formatMoney(order.total),
+      });
+      toast.info(message, {
         duration: 9000,
-        action: { label: 'Open', onClick: () => navigate(`/dashboard/orders/${order.id}`) },
+        action: { label: t.dashboard.orders.open, onClick: () => navigate(`/dashboard/orders/${order.id}`) },
       });
     }
   }, [data, navigate]);

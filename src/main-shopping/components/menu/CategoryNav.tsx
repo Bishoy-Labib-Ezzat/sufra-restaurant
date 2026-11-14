@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { formatNumber, t } from '@/shared/i18n';
 import { cn } from '@/shared/lib/cn';
 import { sectionId, type MenuSection } from '../../lib/menu';
 
@@ -10,8 +11,11 @@ export function CategoryNav({ sections, activeId }: { sections: MenuSection[]; a
     const container = scroller.current;
     const pill = container?.querySelector<HTMLElement>(`[data-target="${activeId}"]`);
     if (!container || !pill) return;
-    const left = pill.offsetLeft - container.clientWidth / 2 + pill.clientWidth / 2;
-    container.scrollTo({ left, behavior: 'smooth' });
+    // Measured on screen, so centring works the same whichever way the row runs (right to left here).
+    const pillBox = pill.getBoundingClientRect();
+    const box = container.getBoundingClientRect();
+    const offset = pillBox.left + pillBox.width / 2 - (box.left + box.width / 2);
+    container.scrollBy({ left: offset, behavior: 'smooth' });
   }, [activeId]);
 
   // A mouse wheel scrolls vertically; over this bar it should move the pills sideways instead.
@@ -22,19 +26,20 @@ export function CategoryNav({ sections, activeId }: { sections: MenuSection[]; a
       const overflowing = container.scrollWidth > container.clientWidth;
       if (!overflowing || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
       event.preventDefault();
-      container.scrollBy({ left: event.deltaY });
+      // Right to left: scrolling down moves along the row, which means towards the left.
+      container.scrollBy({ left: -event.deltaY });
     };
     container.addEventListener('wheel', onWheel, { passive: false });
     return () => container.removeEventListener('wheel', onWheel);
   }, []);
 
   return (
-    <nav aria-label="Menu sections" className="sticky top-[calc(68px+env(safe-area-inset-top))] z-20 -mx-4 border-b border-line bg-paper/92 backdrop-blur-md sm:mx-0">
+    <nav aria-label={t.shop.menu.sections} className="sticky top-[calc(68px+env(safe-area-inset-top))] z-20 -mx-4 border-b border-line bg-paper/92 backdrop-blur-md sm:mx-0">
       {/* Swipeable row: pills snap into place, the faded edges show there is more, and the
           trailing spacer lets the last pill scroll fully into view (end padding alone is ignored). */}
       <div
         ref={scroller}
-        className="scrollbar-none flex snap-x snap-mandatory scroll-px-4 gap-1.5 overflow-x-auto overscroll-x-contain px-4 py-3 [mask-image:linear-gradient(to_right,transparent,#000_16px,#000_calc(100%-40px),transparent)] after:w-2 after:shrink-0 after:content-[''] pointer-coarse:py-2 sm:px-0 sm:[mask-image:none]"
+        className="scrollbar-none flex snap-x snap-mandatory scroll-px-4 gap-1.5 overflow-x-auto overscroll-x-contain px-4 py-3 [mask-image:linear-gradient(to_left,transparent,#000_16px,#000_calc(100%-40px),transparent)] after:w-2 after:shrink-0 after:content-[''] pointer-coarse:py-2 sm:px-0 sm:[mask-image:none]"
       >
         {sections.map(({ category, products }) => {
           const id = sectionId(category.slug);
@@ -55,7 +60,7 @@ export function CategoryNav({ sections, activeId }: { sections: MenuSection[]; a
               )}
             >
               {category.name}
-              <span className={cn('font-mono text-xs', active ? 'text-paper/60' : 'text-muted')}>{products.length}</span>
+              <span className={cn('font-mono text-xs', active ? 'text-paper/60' : 'text-muted')}>{formatNumber(products.length)}</span>
             </a>
           );
         })}

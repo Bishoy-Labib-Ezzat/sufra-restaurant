@@ -1,4 +1,5 @@
 import { Minus, Plus, Trash } from '@phosphor-icons/react';
+import { fill, formatNumber, t } from '@/shared/i18n';
 import { MAX_QUANTITY_PER_ITEM } from '@/shared/lib/pricing';
 import { cn } from '@/shared/lib/cn';
 
@@ -46,24 +47,24 @@ export function QuantityStepper({
         className={button}
         onClick={() => onChange(value - 1)}
         disabled={atMin && !removable}
-        aria-label={showRemove ? `Remove ${itemName}` : `One less ${itemName}`}
+        aria-label={fill(showRemove ? t.stepper.remove : t.stepper.less, { name: itemName })}
       >
         {showRemove ? <Trash size={size === 'sm' ? 14 : 16} weight="bold" /> : <Minus size={size === 'sm' ? 14 : 16} weight="bold" />}
       </button>
       <span
         key={value}
         aria-live="polite"
-        aria-label={`${value} of ${itemName}`}
+        aria-label={fill(t.stepper.value, { count: value, name: itemName })}
         className={cn('animate-pop text-center font-mono font-semibold tabular', size === 'sm' ? 'w-6 text-sm' : 'w-8 text-base')}
       >
-        {value}
+        {formatNumber(value)}
       </span>
       <button
         type="button"
         className={button}
         onClick={() => onChange(value + 1)}
         disabled={value >= MAX_QUANTITY_PER_ITEM}
-        aria-label={`One more ${itemName}`}
+        aria-label={fill(t.stepper.more, { name: itemName })}
       >
         <Plus size={size === 'sm' ? 14 : 16} weight="bold" />
       </button>

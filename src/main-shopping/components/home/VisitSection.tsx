@@ -1,5 +1,6 @@
-import { ArrowUpRight, Clock, MapPin, Phone } from '@phosphor-icons/react';
+import { ArrowUpLeft, Clock, MapPin, Phone } from '@phosphor-icons/react';
 import { hoursLabel, restaurant } from '@/shared/config/restaurant';
+import { fill, t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { buttonStyles } from '@/shared/ui/button-styles';
 
@@ -11,16 +12,16 @@ export function VisitSection() {
       <div className="aspect-[4/3] overflow-hidden rounded-panel bg-paper-deep">
         <img
           src={photo(INTERIOR, 1100, 825)}
-          alt="The dining room with warm lights and wooden tables"
+          alt={t.shop.home.visit.alt}
           loading="lazy"
           className="size-full object-cover"
         />
       </div>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
-          <h2 className="display text-5xl sm:text-6xl">Eat in on Brazil Street</h2>
+          <h2 className="display text-5xl sm:text-6xl">{t.shop.home.visit.title}</h2>
           <p className="max-w-[44ch] text-lg leading-relaxed text-ink-soft">
-            An open grill, a long coffee counter and tables big enough for the whole family.
+            {t.shop.home.visit.body}
           </p>
         </div>
         <ul className="flex flex-col gap-4 text-[15px]">
@@ -30,11 +31,11 @@ export function VisitSection() {
           </li>
           <li className="flex items-center gap-3">
             <Clock size={20} weight="bold" className="text-tomato-deep" aria-hidden />
-            Every day, {hoursLabel}
+            {fill(t.restaurant.everyDay, { hours: hoursLabel })}
           </li>
           <li className="flex items-center gap-3">
             <Phone size={20} weight="bold" className="text-tomato-deep" aria-hidden />
-            <a href={`tel:${restaurant.phone}`} className="font-mono hover:underline">
+            <a href={`tel:${restaurant.phone}`} className="digits-ltr font-mono hover:underline">
               {restaurant.phoneDisplay}
             </a>
           </li>
@@ -45,8 +46,8 @@ export function VisitSection() {
           rel="noreferrer"
           className={buttonStyles({ variant: 'secondary', className: 'self-start' })}
         >
-          Get directions
-          <ArrowUpRight size={16} weight="bold" aria-hidden />
+          {t.shop.home.visit.directions}
+          <ArrowUpLeft size={16} weight="bold" aria-hidden />
         </a>
       </div>
     </section>

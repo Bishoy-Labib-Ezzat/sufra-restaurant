@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { t } from '@/shared/i18n';
 import { Overlay } from '@/shared/ui/Overlay';
 import { OrderPanel } from '../components/orders/OrderPanel';
 
@@ -15,8 +16,8 @@ export function OrderPanelRoute() {
       open={open}
       onClose={() => setOpen(false)}
       onExited={() => navigate({ pathname: '/dashboard/orders', search }, { preventScrollReset: true })}
-      label="Order details"
-      placement="right"
+      label={t.dashboard.orders.details}
+      placement="side"
       className="sm:max-w-xl"
     >
       <OrderPanel orderId={orderId} onClose={() => setOpen(false)} />

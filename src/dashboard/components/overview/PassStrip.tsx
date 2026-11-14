@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Link } from 'react-router';
-import { CaretRight } from '@phosphor-icons/react';
+import { CaretLeft } from '@phosphor-icons/react';
+import { fill, formatNumber, t } from '@/shared/i18n';
 import { formatElapsed } from '@/shared/lib/format';
 import { OPEN_STATUSES, STATUS_META } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
@@ -9,9 +10,9 @@ import type { Order } from '@/shared/types';
 /** The pipeline at a glance: how many orders sit at each step, and how long the oldest has waited. */
 export function PassStrip({ orders, now }: { orders: Order[]; now: number }) {
   return (
-    // Phones: one row per status (name and wait on the left, count on the right).
+    // Phones: one row per status (name and wait at the start, count at the end).
     // From tablet width: the horizontal pipeline with arrows between steps.
-    <section aria-label="Orders in progress">
+    <section aria-label={t.dashboard.overview.passLabel}>
       <div className="flex flex-col rounded-panel bg-ink p-2 text-paper md:flex-row md:items-stretch">
         {OPEN_STATUSES.map((status, index) => {
           const lane = orders.filter((order) => order.status === status);
@@ -20,7 +21,7 @@ export function PassStrip({ orders, now }: { orders: Order[]; now: number }) {
           return (
             <Fragment key={status}>
               {index > 0 && (
-                <CaretRight size={18} weight="bold" className="hidden shrink-0 self-center text-paper/30 md:block" aria-hidden />
+                <CaretLeft size={18} weight="bold" className="hidden shrink-0 self-center text-paper/30 md:block" aria-hidden />
               )}
               <Link
                 to="/dashboard/orders"
@@ -39,10 +40,10 @@ export function PassStrip({ orders, now }: { orders: Order[]; now: number }) {
                     urgent && 'text-[#ff8a6f]',
                   )}
                 >
-                  {lane.length}
+                  {formatNumber(lane.length)}
                 </span>
                 <span className="col-start-1 row-start-2 text-xs text-paper/60">
-                  {oldest ? `Oldest ${formatElapsed(oldest, now)}` : 'Nothing waiting'}
+                  {oldest ? fill(t.dashboard.overview.oldest, { time: formatElapsed(oldest, now) }) : t.dashboard.overview.nothingWaiting}
                 </span>
               </Link>
             </Fragment>

@@ -1,3 +1,4 @@
+import { fill, formatNumber, plural, t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { ORDER_FLOW, STATUS_META } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
@@ -6,24 +7,24 @@ import type { DashboardOverview } from '@/shared/types';
 
 /** Best sellers with a bare magnitude bar (no background track) under each name. */
 export function BestSellers({ items }: { items: DashboardOverview['topProducts'] }) {
-  if (!items.length) return <p className="text-sm text-muted">No sales in the last 7 days.</p>;
+  if (!items.length) return <p className="text-sm text-muted">{t.dashboard.overview.noSales}</p>;
   const max = Math.max(...items.map((item) => item.quantity));
   return (
     <ol className="flex flex-col gap-4">
       {items.map((item, index) => (
         <li key={item.productId} className="flex items-center gap-3">
-          <span className="w-4 font-mono text-sm text-muted">{index + 1}</span>
+          <span className="w-4 font-mono text-sm text-muted">{formatNumber(index + 1)}</span>
           <img src={photo(item.imageUrl, 96, 96)} alt="" className="size-11 rounded-thumb object-cover" />
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <div className="flex items-baseline justify-between gap-3">
               <span className="truncate text-[15px] font-semibold">{item.name}</span>
               <span className="shrink-0 font-mono text-sm">
-                {item.quantity} <span className="text-muted">sold</span>
+                {fill(t.dashboard.overview.sold, { times: plural(t.plurals.times, item.quantity) })}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <span className="h-1 rounded-full bg-ink" style={{ width: `${(item.quantity / max) * 70}%` }} aria-hidden />
-              <Price amount={item.revenue} className="ml-auto text-xs text-muted" />
+              <Price amount={item.revenue} className="ms-auto text-xs text-muted" />
             </div>
           </div>
         </li>
@@ -38,7 +39,7 @@ export function StatusMix({ breakdown }: { breakdown: DashboardOverview['statusB
   const rows = order
     .map((status) => breakdown.find((entry) => entry.status === status) ?? { status, count: 0 })
     .filter((row) => row.count > 0);
-  if (!rows.length) return <p className="text-sm text-muted">No orders yet today.</p>;
+  if (!rows.length) return <p className="text-sm text-muted">{t.dashboard.overview.noOrdersToday}</p>;
   const max = Math.max(...rows.map((row) => row.count));
 
   return (
@@ -49,8 +50,8 @@ export function StatusMix({ breakdown }: { breakdown: DashboardOverview['statusB
             <span className={cn('size-2 rounded-full', STATUS_META[status].tone.marker)} aria-hidden />
             {STATUS_META[status].label}
           </span>
-          <span className="h-2 rounded-r-[4px] bg-ink/80" style={{ width: `${(count / max) * 100}%` }} aria-hidden />
-          <span className="text-right font-mono font-semibold">{count}</span>
+          <span className="h-2 rounded-e-[4px] bg-ink/80" style={{ width: `${(count / max) * 100}%` }} aria-hidden />
+          <span className="text-end font-mono font-semibold">{formatNumber(count)}</span>
         </li>
       ))}
     </ul>

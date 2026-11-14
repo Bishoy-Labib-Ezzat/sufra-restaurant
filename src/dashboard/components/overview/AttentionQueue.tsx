@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router';
 import { Confetti, Moped, Storefront } from '@phosphor-icons/react';
-import { formatElapsed, minutesSince, pluralize } from '@/shared/lib/format';
-import { advanceLabel, nextStatus } from '@/shared/lib/order-status';
+import { fill, plural, t } from '@/shared/i18n';
+import { formatElapsed, minutesSince } from '@/shared/lib/format';
+import { advanceLabel, formatOrderCode, nextStatus } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/Button';
 import { EmptyState } from '@/shared/ui/EmptyState';
@@ -23,15 +24,15 @@ export function AttentionQueue({ orders, now }: { orders: Order[]; now: number }
 
   return (
     <Panel
-      title="Needs you now"
-      aside={waiting.length > LIMIT && <Link to="/dashboard/orders" className="font-semibold text-ink underline underline-offset-4">All {waiting.length}</Link>}
+      title={t.dashboard.overview.attentionTitle}
+      aside={waiting.length > LIMIT && <Link to="/dashboard/orders" className="font-semibold text-ink underline underline-offset-4">{fill(t.dashboard.overview.attentionAll, { count: waiting.length })}</Link>}
     >
       {waiting.length === 0 ? (
         <EmptyState
           className="py-8"
           icon={Confetti}
-          title="All caught up"
-          description="Every order has been confirmed. New ones will show up here and ping you."
+          title={t.dashboard.overview.caughtUpTitle}
+          description={t.dashboard.overview.caughtUpBody}
         />
       ) : (
         <ul className="flex flex-col divide-y divide-line">
@@ -47,15 +48,18 @@ export function AttentionQueue({ orders, now }: { orders: Order[]; now: number }
                 <button
                   type="button"
                   onClick={() => navigate(`/dashboard/orders/${order.id}`)}
-                  className="col-start-1 row-start-1 flex min-h-11 min-w-0 flex-col items-start text-left sm:flex-1 sm:flex-row sm:items-center sm:gap-3"
+                  className="col-start-1 row-start-1 flex min-h-11 min-w-0 flex-col items-start text-start sm:flex-1 sm:flex-row sm:items-center sm:gap-3"
                 >
-                  <span className="shrink-0 font-mono text-[15px] font-bold whitespace-nowrap">{order.code}</span>
+                  <span className="shrink-0 font-mono text-[15px] font-bold whitespace-nowrap">{formatOrderCode(order.code)}</span>
                   <span className="min-w-0 max-w-full">
                     <span className="block truncate font-semibold">{order.customer.name}</span>
                     <span className="flex items-center gap-1.5 text-sm text-muted">
                       {order.fulfillment === 'delivery' ? <Moped size={14} weight="bold" aria-hidden /> : <Storefront size={14} weight="bold" aria-hidden />}
                       <span className="truncate">
-                        {order.address?.zoneName ?? 'Pickup'}, {pluralize(order.items.reduce((sum, item) => sum + item.quantity, 0), 'item')}
+                        {fill(t.dashboard.overview.orderSummary, {
+                          place: order.address?.zoneName ?? t.common.pickup,
+                          items: plural(t.plurals.items, order.items.reduce((sum, item) => sum + item.quantity, 0)),
+                        })}
                       </span>
                     </span>
                   </span>

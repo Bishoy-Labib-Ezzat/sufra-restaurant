@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type DragEvent } from 'react';
 import { ImageSquare, LinkSimple, Trash, UploadSimple, WarningCircle } from '@phosphor-icons/react';
 import { getErrorMessage } from '@/shared/api/errors';
+import { t } from '@/shared/i18n';
 import { photo } from '@/shared/lib/image';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/Button';
@@ -30,7 +31,7 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
     if (!file) return;
     setLocalError(null);
     if (!ACCEPTED.includes(file.type)) {
-      setLocalError('Use a JPG, PNG or WebP photo.');
+      setLocalError(t.dashboard.image.badType);
       return;
     }
     upload.mutate(file, {
@@ -53,7 +54,7 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
       setLink('');
       setLocalError(null);
     } catch {
-      setLocalError('That does not look like an image link. It should start with https://');
+      setLocalError(t.dashboard.image.badLink);
     }
   };
 
@@ -62,7 +63,7 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
   return (
     <div className="flex flex-col gap-3">
       <span className="text-sm font-semibold" id={`${inputId}-label`}>
-        Photo
+        {t.dashboard.image.label}
       </span>
       <input
         ref={fileInput}
@@ -79,13 +80,13 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
 
       {value ? (
         <div className="relative overflow-hidden rounded-panel bg-paper-deep">
-          <img src={photo(value, 900, 600)} alt="Current photo" className="aspect-[3/2] w-full object-cover" />
-          <div className="absolute right-3 bottom-3 flex gap-2">
+          <img src={photo(value, 900, 600)} alt={t.dashboard.image.current} className="aspect-[3/2] w-full object-cover" />
+          <div className="absolute end-3 bottom-3 flex gap-2">
             <Button size="sm" variant="secondary" icon={UploadSimple} onClick={() => fileInput.current?.click()} loading={upload.isPending}>
-              Replace
+              {t.dashboard.image.replace}
             </Button>
             <Button size="sm" variant="secondary" icon={Trash} onClick={() => onChange('')} disabled={upload.isPending}>
-              Remove
+              {t.dashboard.image.remove}
             </Button>
           </div>
         </div>
@@ -109,15 +110,15 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
           {upload.isPending ? (
             <>
               <Spinner className="size-6" />
-              <span className="text-[15px] font-semibold">Resizing and uploading</span>
+              <span className="text-[15px] font-semibold">{t.dashboard.image.uploading}</span>
             </>
           ) : (
             <>
               <span className="grid size-14 place-items-center rounded-full bg-paper-deep text-ink-soft">
                 <ImageSquare size={28} weight="duotone" aria-hidden />
               </span>
-              <span className="text-[15px] font-semibold">Drop a photo here, or click to browse</span>
-              <span className="text-sm text-muted">JPG, PNG or WebP. Landscape or square works best.</span>
+              <span className="text-[15px] font-semibold">{t.dashboard.image.drop}</span>
+              <span className="text-sm text-muted">{t.dashboard.image.hint}</span>
             </>
           )}
         </button>
@@ -125,8 +126,8 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
 
       <div className="flex gap-2">
         <label className="relative flex-1">
-          <span className="sr-only">Image link</span>
-          <LinkSimple size={16} weight="bold" aria-hidden className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
+          <span className="sr-only">{t.dashboard.image.link}</span>
+          <LinkSimple size={16} weight="bold" aria-hidden className="pointer-events-none absolute top-1/2 start-4 -translate-y-1/2 text-muted" />
           <Input
             value={link}
             onChange={(event) => setLink(event.target.value)}
@@ -136,12 +137,12 @@ export function ImageField({ value, onChange, error }: ImageFieldProps) {
                 applyLink();
               }
             }}
-            placeholder="Or paste an image link"
-            className="h-11 pl-10 text-base sm:text-sm"
+            placeholder={t.dashboard.image.linkPlaceholder}
+            className="h-11 ps-10 text-base sm:text-sm"
           />
         </label>
         <Button variant="secondary" onClick={applyLink} disabled={!link.trim()}>
-          Use link
+          {t.dashboard.image.useLink}
         </Button>
       </div>
 

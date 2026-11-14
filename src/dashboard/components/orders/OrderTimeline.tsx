@@ -1,3 +1,4 @@
+import { fill, t } from '@/shared/i18n';
 import { formatDateTime } from '@/shared/lib/format';
 import { STATUS_META } from '@/shared/lib/order-status';
 import { cn } from '@/shared/lib/cn';
@@ -16,13 +17,13 @@ export function OrderTimeline({ history }: { history: OrderStatusChange[] }) {
           </div>
           <div className="flex flex-col gap-0.5 pb-5">
             <p className="text-[15px] font-semibold">
-              {entry.status === 'new' ? 'Placed online' : STATUS_META[entry.status].label}
+              {entry.status === 'new' ? t.dashboard.orders.placedOnline : STATUS_META[entry.status].label}
             </p>
             <p className="text-sm text-muted">
               <span className="font-mono">{formatDateTime(entry.at)}</span>
-              {entry.by && <> by {entry.by}</>}
+              {entry.by && <> {fill(t.dashboard.orders.by, { name: entry.by })}</>}
             </p>
-            {entry.note && <p className="mt-1 text-sm text-ink-soft">&ldquo;{entry.note}&rdquo;</p>}
+            {entry.note && <p className="mt-1 text-sm text-ink-soft">«{entry.note}»</p>}
           </div>
         </li>
       ))}
