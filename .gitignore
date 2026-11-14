@@ -7,3 +7,5 @@ dist
 
 # Local editor/agent tooling
 .claude/
+
+.vercel
